@@ -1,0 +1,92 @@
+<mat-toolbar class="topbar">
+  <!-- Mobile Menu -->
+  <button mat-icon-button (click)="toggleMobileNav.emit()" *ngIf="!showToggle">
+    <i-tabler name="menu-2" class="icon-20 d-flex"></i-tabler>
+  </button>
+  <!-- --------------------------------------------------------------- -->
+
+  <!-- --------------------------------------------------------------- -->
+  <!-- Notification Dropdown -->
+  <!-- --------------------------------------------------------------- -->
+<!--
+  <button mat-icon-button aria-label="Notifications">
+    <i-tabler
+      class="d-flex"
+      name="bell"
+      matBadge="1"
+      matBadgeColor="primary"
+    ></i-tabler>
+  </button> -->
+
+  <span class="flex-1-auto"></span>
+
+  <!-- --------------------------------------------------------------- -->
+  <!-- profile Dropdown -->
+  <!-- --------------------------------------------------------------- -->
+  <!-- <a
+    mat-flat-button
+    color="primary"
+    href="https://adminmart.com/"
+    target="_blank"
+    class="d-flex justify-content-center"
+  >
+    Download Free
+  </a> -->
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="profilemenu"
+    aria-label="Notifications"
+  >
+    <img
+      src="/assets/images/profile/user-1.jpg"
+      class="rounded-circle object-cover"
+      width="40"
+    />
+  </button>
+  <mat-menu #profilemenu="matMenu" class="topbar-dd cardWithShadow">
+    <div class="d-flex align-items-center " style="padding: 20px 16px;">
+      <img src="/assets/images/profile/user-1.jpg" alt="users" width="40" class="rounded-circle" />
+      <div class="m-l-16">
+        <h6 class="mat-subtitle-1 f-s-14 f-w-600">
+          EL MOUEDDEN Ali
+        </h6>
+        <span class="mat-body-1 f-s-12">
+          Admin
+        </span>
+      </div>
+    </div>
+    <!-- <button mat-menu-item>
+      <mat-icon class="d-flex align-items-center"
+        ><i-tabler name="user" class="icon-18 d-flex"></i-tabler></mat-icon
+      >My Profile
+    </button> -->
+    <!-- <button mat-menu-item>
+      <mat-icon class="d-flex align-items-center"
+        ><i-tabler name="mail" class="icon-18 d-flex"></i-tabler></mat-icon
+      >My Account
+    </button>
+    <button mat-menu-item>
+      <mat-icon class="d-flex align-items-center"
+        ><i-tabler
+          name="list-check"
+          class="icon-18 d-flex"
+        ></i-tabler></mat-icon
+      >My Task
+    </button> -->
+
+    <div class="p-x-12 m-t-5">
+      <a
+        [routerLink]="['/authentication/login']"
+        mat-stroked-button
+        color="primary"
+        class="w-100"
+        >      <mat-icon class="d-flex align-items-center"
+        ><i-tabler
+          name="power"
+          class="icon-18 d-flex"
+        ></i-tabler></mat-icon
+      >Logout</a
+      >
+    </div>
+  </mat-menu>
+</mat-toolbar>

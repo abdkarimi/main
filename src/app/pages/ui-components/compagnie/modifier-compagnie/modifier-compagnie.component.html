@@ -1,0 +1,82 @@
+<mat-card class="cardWithShadow theme-card">
+    <mat-card-header>
+        <mat-card-title class="m-b-0">Modifier une compagnie</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="b-t-1">
+        <div class="row">
+            <div class="col">
+                <mat-form-field appearance="outline" class="w-100" color="primary">
+                  <mat-select role="combobox" aria-autocomplete="none" aria-haspopup="listbox" placeholder="select une compagnie">
+                    <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
+                      <input matInput (keyup)="onKey($event.target.value)" placeholder="Search"/>
+                    </mat-form-field>
+                    <mat-option role="option" *ngFor="let state of selectedStates" [value]="state">{{state}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Nom</mat-label>
+                <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <input matInput placeholder="Nom" />
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Adresse</mat-label>
+                <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <input matInput placeholder="Adresse" />
+                </mat-form-field>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col">
+                <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Email</mat-label>
+                <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <input matInput placeholder="Email" />
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Tel</mat-label>
+                <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <input matInput placeholder="Tel" />
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Fax</mat-label>
+                <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <input matInput placeholder="Fax" />
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Nom Responsable</mat-label>
+                <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <input matInput placeholder="Nom Responsable" />
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">GSM Responsable</mat-label>
+                <mat-form-field appearance="outline" class="w-100" color="primary">
+                    <input matInput placeholder="GSM Responsable" />
+                </mat-form-field>
+            </div>
+        </div>
+    </mat-card-content>
+    <mat-card-actions class="b-t-1">
+        <button mat-flat-button color="warn" type="reset">
+            <span class="mdc-button__label">Annuler</span>
+            <span class="mat-mdc-focus-indicator"></span>
+            <span class="mat-mdc-button-touch-target"></span>
+            <span class="mat-ripple mat-mdc-button-ripple"></span>
+        </button>
+        <button mat-flat-button color="primary" type="reset" class="m-l-8">
+            <span class="mdc-button__label">Confirmer</span>
+            <span class="mat-mdc-focus-indicator"></span>
+            <span class="mat-mdc-button-touch-target"></span>
+            <span class="mat-ripple mat-mdc-button-ripple"></span>
+        </button>
+    </mat-card-actions>
+</mat-card>

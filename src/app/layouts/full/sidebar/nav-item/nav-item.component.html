@@ -1,0 +1,26 @@
+<!-- nav-item.component.html -->
+
+<ng-container *ngIf="shouldDisplay(item) && item.children && item.children.length > 0">
+  <mat-expansion-panel [expanded]="isPanelOpen" [class.mat-elevation-z0]="true">
+    <mat-expansion-panel-header class="menu-list-drop" (click)="togglePanel.emit()">
+      <i-tabler class="routeIcon" [name]="item.iconName" matListItemIcon></i-tabler>
+      <span class="hide-menu">{{ item.displayName }}</span>
+    </mat-expansion-panel-header>
+    <mat-nav-list class="">
+      <app-nav-item *ngFor="let child of item.children" [item]="child" [isPanelOpen]="isPanelOpen" (togglePanel)="togglePanel.emit()">
+      </app-nav-item>
+    </mat-nav-list>
+  </mat-expansion-panel>
+</ng-container>
+
+<ng-container *ngIf="shouldDisplay(item) && (!item.children || item.children.length === 0)">
+  <a mat-list-item
+     (click)="onItemSelected(item)"
+     [ngClass]="{
+        'mat-toolbar mat-primary activeMenu': item.route ? router.isActive(item.route, true) : false,
+     }"
+     class="menu-list-item">
+    <i-tabler class="routeIcon" [name]="item.iconName" matListItemIcon></i-tabler>
+    <span class="hide-menu">{{ item.displayName }}</span>
+  </a>
+</ng-container>

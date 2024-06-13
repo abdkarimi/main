@@ -1,0 +1,128 @@
+<mat-card class="cardWithShadow theme-card">
+  <mat-card-header>
+    <mat-card-title class="m-b-0">Suivre L’état Des Demandes Préétablies</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="b-t-1">
+    <div class="row">
+      <div class="col-lg-4">
+        <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
+          <input matInput placeholder="Search"/>
+          <mat-icon matSuffix role="img">
+            <i-tabler name="search" class="icon-20"></i-tabler>
+          </mat-icon>
+        </mat-form-field>
+
+      </div>
+
+    </div>
+    <div class="row ">
+      <div class="col-lg-12">
+        <div class="table-responsive">
+          <table mat-table [dataSource]="dataSource" class="w-100">
+            <!-- Position Column -->
+            <ng-container matColumnDef="assigned">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+                Numéro de demande
+              </th>
+              <td mat-cell *matCellDef="let element">
+                <div class="d-flex align-items-center">
+                  <img [src]="element.imagePath" alt="users" width="40" class="rounded-circle" />
+                  <div class="m-l-16">
+                    <h6 class="mat-subtitle-1 f-s-14 f-w-600">
+                      {{ element.uname }}
+                    </h6>
+                    <span class="mat-body-1 f-s-12">
+                      {{ element.position }}
+                    </span>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Agent">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+                Agent
+              </th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">
+                {{ element.productName }}
+              </td>
+            </ng-container>
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+                Date de demande
+              </th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">
+                {{ element.productName }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="ÉTAT">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+                Demande Reçue
+              </th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">
+                {{ element.productName }}
+              </td>
+            </ng-container>
+
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="priority">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+                Priority
+              </th>
+              <td mat-cell *matCellDef="let element">
+                <ng-template [ngIf]="element.priority == 'low'">
+                  <span class="bg-light-accent text-accent rounded f-w-600 p-6 p-y-4 f-s-12">
+                    {{ element.priority | titlecase }}
+                  </span>
+                </ng-template>
+                <ng-template [ngIf]="element.priority == 'medium'">
+                  <span class="bg-light-success text-primary rounded f-w-600 p-6 p-y-4 f-s-12">
+                    {{ element.priority | titlecase }}
+                  </span>
+                </ng-template>
+                <ng-template [ngIf]="element.priority == 'high'">
+                  <span class="bg-light-warning text-warning rounded f-w-600 p-6 p-y-4 f-s-12">
+                    {{ element.priority | titlecase }}
+                  </span>
+                </ng-template>
+                <ng-template [ngIf]="element.priority == 'critical'">
+                  <span class="bg-light-error text-error rounded f-w-600 p-6 p-y-4 f-s-12">
+                    {{ element.priority | titlecase }}
+                  </span>
+                </ng-template>
+                <ng-template [ngIf]="element.priority == 'moderate'">
+                  <span class="bg-light-success text-success rounded f-w-600 p-6 p-y-4 f-s-12">
+                    {{ element.priority | titlecase }}
+                  </span>
+                </ng-template>
+              </td>
+            </ng-container>
+
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="budget">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+                Consulter
+              </th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">
+                <a href="#" class="cursor-pointer m-l-15" style="color: #49beff;">
+                  <i-tabler name="search" class="icon-30"></i-tabler>
+                </a>
+              </td>
+
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+          <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
+            aria-label="Select page of developers"></mat-paginator>
+        </div>
+
+      </div>
+
+    </div>
+  </mat-card-content>
+</mat-card>

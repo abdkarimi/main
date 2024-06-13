@@ -1,0 +1,125 @@
+<mat-card class="cardWithShadow theme-card">
+  <mat-card-header>
+    <mat-card-title class="m-b-0">Modifier un article</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="b-t-1">
+    <div class="row">
+      <div class="col">
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <mat-select role="combobox" aria-autocomplete="none" aria-haspopup="listbox" placeholder="Article">
+            <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
+              <input matInput (keyup)="onKey($event.target.value)" placeholder="Search"/>
+            </mat-form-field>
+            <mat-option role="option" *ngFor="let state of selectedStates" [value]="state">{{state}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Designation</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput placeholder="Designation"/>
+        </mat-form-field>
+      </div>
+      <div class="col">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Quantité demandée</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput type="number" placeholder="Quantité" />
+        </mat-form-field>
+      </div>
+      <div class="col">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Prix unitaire</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput type="number" placeholder="Prix unitaire" />
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Description</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <textarea matInput rows="5" placeholder="Description"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Image</mat-label>
+        <input type="file" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Référence fabricant</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput placeholder="Référence fabricant" />
+        </mat-form-field>
+      </div>
+      <div class="col">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Marque</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput placeholder="Marque" />
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Sous catégorie</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <mat-select role="combobox" aria-autocomplete="none" aria-haspopup="listbox" placeholder="Sous catégorie">
+            <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
+              <input matInput (keyup)="onKey($event.target.value)" placeholder="Search"/>
+            </mat-form-field>
+            <mat-option role="option" *ngFor="let state of selectedStates" [value]="state">{{state}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Budget</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <mat-select role="combobox" aria-autocomplete="none" aria-haspopup="listbox" placeholder="Budget">
+            <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
+              <input matInput (keyup)="onKey($event.target.value)" placeholder="Search"/>
+            </mat-form-field>
+            <mat-option role="option" *ngFor="let state of selectedStates" [value]="state">{{state}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Code barre</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput placeholder="Code barre"/>
+        </mat-form-field>
+      </div>
+      <div class="col">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">TVA</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput type="number" placeholder="TVA" />
+        </mat-form-field>
+      </div>
+      <div class="col">
+        <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Seuil</mat-label>
+        <mat-form-field appearance="outline" class="w-100" color="primary">
+          <input matInput type="number" placeholder="Seuil" />
+        </mat-form-field>
+      </div>
+    </div>
+  </mat-card-content>
+  <mat-card-actions class="b-t-1">
+    <button mat-flat-button color="warn" type="reset">
+      <span class="mdc-button__label">Annuler</span>
+      <span class="mat-mdc-focus-indicator"></span>
+      <span class="mat-mdc-button-touch-target"></span>
+      <span class="mat-ripple mat-mdc-button-ripple"></span>
+    </button>
+    <button mat-flat-button color="primary" type="reset" class="m-l-8">
+      <span class="mdc-button__label">Confirmer</span>
+      <span class="mat-mdc-focus-indicator"></span>
+      <span class="mat-mdc-button-touch-target"></span>
+      <span class="mat-ripple mat-mdc-button-ripple"></span>
+    </button>
+  </mat-card-actions>
+</mat-card>
