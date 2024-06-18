@@ -9,7 +9,7 @@
     <div class="row">
       <div class="col-lg-8">
         <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
-          <input matInput placeholder="Recherche" />
+          <input matInput placeholder="Recherche" [formControl]="searchControl" />
           <mat-icon matSuffix role="img">
             <i-tabler name="search" class="icon-20"></i-tabler>
           </mat-icon>
@@ -19,15 +19,16 @@
     <div class="row">
       <div class="col-lg-12">
         <div class="table-responsive">
-          <table mat-table [dataSource]="marques" class="w-100">
+          <table mat-table [dataSource]="filteredMarques" class="w-100" matSort>
             <ng-container matColumnDef="idMarque">
-              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Id Marque</th>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="f-w-600 mat-subtitle-1 f-s-14">Id Marque</th>
               <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.idMarque }}</td>
             </ng-container>
 
             <ng-container matColumnDef="nomMarque">
-              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Nom Marque</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.nomMarque }}</td>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="f-w-600 mat-subtitle-1 f-s-14">Nom Marque
+              </th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.libelleMarque }}</td>
             </ng-container>
 
             <ng-container matColumnDef="actions">
@@ -46,7 +47,8 @@
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>
           <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
-            aria-label="Sélectionner la page des marques"></mat-paginator>
+            aria-label="Sélectionner la page des marques" [length]="filteredMarques.data.length" [pageSize]="5"
+            (page)="onPageChange($event)"></mat-paginator>
         </div>
       </div>
     </div>
@@ -61,13 +63,23 @@
         Marque' }}</h2>
       <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
         <form [formGroup]="marqueForm">
-          <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-            <mat-label>Id Marque</mat-label>
-            <input matInput formControlName="idMarque" />
-          </mat-form-field>
+          <ng-container *ngIf="isEdit">
+            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+              <mat-label>Id Marque</mat-label>
+              <input matInput formControlName="idMarque" disabled />
+            </mat-form-field>
+          </ng-container>
           <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
             <mat-label>Nom Marque</mat-label>
-            <input matInput formControlName="nomMarque" />
+            <input matInput formControlName="libelleMarque"
+              [ngClass]="{'is-invalid': marqueForm.get('libelleMarque').invalid && (marqueForm.get('libelleMarque').dirty || marqueForm.get('libelleMarque').touched)}" />
+            <div
+              *ngIf="marqueForm.get('libelleMarque').invalid && (marqueForm.get('libelleMarque').dirty || marqueForm.get('libelleMarque').touched)"
+              class="invalid-feedback">
+              <div *ngIf="marqueForm.get('libelleMarque').errors.required">Le nom de la marque est requis.</div>
+              <div *ngIf="marqueForm.get('libelleMarque').errors.minlength">Le nom de la marque doit contenir au moins 3
+                caractères.</div>
+            </div>
           </mat-form-field>
         </form>
       </mat-dialog-content>
@@ -86,7 +98,7 @@
     <div class="mat-mdc-dialog-surface mdc-dialog__surface">
       <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Supprimer</h2>
       <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{
-          selectedMarque?.nomMarque }}</span>?</div>
+          selectedMarque?.libelleMarque }}</span>?</div>
       <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
         <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
         <button mat-flat-button color="primary" (click)="confirmerSuppression()">Supprimer</button>

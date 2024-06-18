@@ -24,6 +24,7 @@ import { HeaderComponent } from './layouts/full/header/header.component';
 import { BrandingComponent } from './layouts/full/sidebar/branding.component';
 import { AppNavItemComponent } from './layouts/full/sidebar/nav-item/nav-item.component';
 import { JwtInterceptor } from './Interceptor/JwtInterceptor';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,15 @@ import { JwtInterceptor } from './Interceptor/JwtInterceptor';
     ReactiveFormsModule,
     MaterialModule,
     TablerIconsModule.pick(TablerIcons),
+    ToastrModule.forRoot(
+      {preventDuplicates: true,
+        easing: 'ease-in',
+        progressBar:true,
+        closeButton: true,
+        timeOut:3000,
+
+      }
+    ),
   ],
   exports: [TablerIconsModule],
   providers: [
