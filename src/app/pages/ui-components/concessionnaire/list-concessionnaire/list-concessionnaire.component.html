@@ -108,7 +108,7 @@
         </form>
       </mat-dialog-content>
       <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
-        <button mat-flat-button color="warn" (click)="dialogRef.close()">Annuler</button>
+        <button mat-flat-button color="warn" (click)="closeDialog()">Annuler</button>
         <button mat-flat-button color="primary" (click)="saveConcessionnaire()">{{ isEdit ? 'Modifier' : 'Ajouter'
           }}</button>
       </mat-dialog-actions>
@@ -124,7 +124,7 @@
       <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{
           selectedConcessionnaire?.nom }}</span>?</div>
       <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
-        <button mat-flat-button color="warn" (click)="dialogRef.close()">Annuler</button>
+        <button mat-flat-button color="warn" (click)="closeDialog()">Annuler</button>
         <button mat-flat-button color="primary" (click)="confirmDelete()">Supprimer</button>
       </div>
     </div>

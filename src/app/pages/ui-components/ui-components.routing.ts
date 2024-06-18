@@ -31,6 +31,13 @@ import { ListStructureComponent } from './structure/list-structure/list-structur
 import { ListAgentComponent } from './agent/list-agent/list-agent.component';
 import { ListEnumerationComponent } from './enumeration/list-enumeration/list-enumeration.component';
 import { ListDestinationComponent } from './destination/list-destination/list-destination.component';
+import { ListAssuranceComponent } from './assurance/list-assurance/list-assurance.component';
+import { ListRoleComponent } from './role/list-role/list-role.component';
+import { ListPerimetreComponent } from './perimetre/list-perimetre/list-perimetre.component';
+import { ListVehiculeComponent } from './vehicule/list-vehicule/list-vehicule.component';
+import { ListAccidentComponent } from './accident/list-accident/list-accident.component';
+import { ListAlerteComponent } from './alerte/list-alerte/list-alerte.component';
+import { ListInterventionComponent } from './intervention/list-intervention/list-intervention.component';
 
 export const UiComponentsRoutes: Routes = [
   {
@@ -154,6 +161,34 @@ export const UiComponentsRoutes: Routes = [
       {
         path: 'ListDestination',
         component: ListDestinationComponent,
+      },
+      {
+        path: 'ListAssurance',
+        component: ListAssuranceComponent,
+      },
+      {
+        path: 'ListRole',
+        component: ListRoleComponent,
+      },
+      {
+        path: 'ListPerimetre',
+        component: ListPerimetreComponent,
+      },
+      {
+        path: 'ListVehicule',
+        component: ListVehiculeComponent,
+      },
+      {
+        path: 'ListAccident',
+        component: ListAccidentComponent,
+      },
+      {
+        path: 'ListAlerte',
+        component: ListAlerteComponent,
+      },
+      {
+        path: 'ListIntervention',
+        component: ListInterventionComponent,
       },
     ],
   },

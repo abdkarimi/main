@@ -4,29 +4,41 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Tableau de bord',
     iconName: 'layout-dashboard',
+    iconColor: 'icon-color-primary',
     route: '/dashboard',
     roles: ['Admin', 'Agent'],
   },
   {
     displayName: 'Order de mission',
-    iconName: 'article',
+    iconName: 'file-time',
+    //iconColor: '#00abfb',
     roles: ['Admin', 'Agent'],
     children: [
       {
-        displayName: 'Saisir',
-        iconName: 'file-plus',
+        displayName: 'Créer',
+        iconName: 'folder-plus',
+        iconColor: '#47a030',
         route: '/ui-components/SaisirA',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Modifier',
         iconName: 'file-pencil',
+        iconColor: '#47a030',
         route: '/ui-components/ModifierA',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Supprimer',
-        iconName: 'file-pencil',
+        iconName: 'file-x',
+        iconColor: '#47a030',
+        route: '/ui-components/SupprimerA',
+        roles: ['Admin', 'Agent'],
+      },
+      {
+        displayName: 'Lister',
+        iconName: 'file-stack',
+        iconColor: '#47a030',
         route: '/ui-components/SupprimerA',
         roles: ['Admin', 'Agent'],
       },
@@ -36,25 +48,28 @@ export const navItems: NavItem[] = [
   //--------------------------------Déclarations-------------------
   {
     displayName: 'Déclarations',
-    iconName: 'article',
+    iconName: 'text-plus',
     roles: ['Admin', 'Agent'],
     children: [
       {
         displayName: 'Accident',
-        iconName: 'file-plus',
-        route: '/ui-components/SupprimerC',
+        iconName: 'car-crash',
+        iconColor: '#ed1c24',
+        route: '/ui-components/ListAccident',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Alerte',
-        iconName: 'file-search',
-        route: '/ui-components/AjouterC',
+        iconName: 'alarm',
+        iconColor: '#ed1c24',
+        route: '/ui-components/ListAlerte',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Intervention',
-        iconName: 'file-plus',
-        route: '/ui-components/SupprimerC',
+        iconName: 'car-crane',
+        iconColor: '#ed1c24',
+        route: '/ui-components/ListIntervention',
         roles: ['Admin', 'Agent'],
       },
     ],
@@ -63,50 +78,63 @@ export const navItems: NavItem[] = [
   //--------------------------------Gestion------------------------
   {
     displayName: 'Gestion',
-    iconName: 'article',
+    iconName: 'adjustments',
     roles: ['Admin', 'Agent'],
     children: [
       {
         displayName: 'Agent',
-        iconName: 'file-plus',
+        iconName: 'user-circle',
+        iconColor: '#47a030',
         route: '/ui-components/ListAgent',
         roles: ['Admin', 'Agent'],
       },
       {
+        displayName: 'Assurance',
+        iconName: 'circle-letter-a',
+        iconColor: '#47a030',
+        route: '/ui-components/ListAssurance',
+        roles: ['Admin', 'Agent'],
+      },
+      {
         displayName: 'Compagnie',
-        iconName: 'file-search',
-        //route: '/ui-components/AjouterCompagnie',
+        iconName: 'circle-letter-c',
+        iconColor: '#47a030',
         route: '/ui-components/ListCompagnie',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Concessionnaire',
         iconName: 'report-medical',
+        iconColor: '#47a030',
         route: '/ui-components/ListConcessionnaire',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Garage',
         iconName: 'file-plus',
+        iconColor: '#47a030',
         route: '/ui-components/ListGarage',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Marque',
-        iconName: 'file-plus',
+        iconName: 'category',
+        iconColor: '#47a030',
         route: '/ui-components/ListMarque',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Modèle',
-        iconName: 'file-plus',
+        iconName: 'circle-letter-m',
+        iconColor: '#47a030',
         route: '/ui-components/ListModele',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Véhicule',
-        iconName: 'file-plus',
-        route: '/ui-components/SupprimerC4',
+        iconName: 'car',
+        iconColor: '#47a030',
+        route: '/ui-components/ListVehicule',
         roles: ['Admin', 'Agent'],
       },
     ],
@@ -116,54 +144,69 @@ export const navItems: NavItem[] = [
   //------------------------------Paramètres------------
   {
     displayName: 'Paramètres',
-    iconName: 'article',
+    iconName: 'settings',
     roles: ['Admin', 'Agent'],
     children: [
       {
         displayName: 'Destination',
-        iconName: 'file-search',
+        iconName: 'map-pin',
+        iconColor: '#47a030',
         route: '/ui-components/ListDestination',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Enumération',
-        iconName: 'report-medical',
+        iconName: 'box-multiple-0',
+        iconColor: '#47a030',
         route: '/ui-components/ListEnumeration',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Périmètre',
-        iconName: 'file-plus',
-        route: '/ui-components/SupprimerC',
+        iconName: 'map-pins',
+        iconColor: '#47a030',
+        route: '/ui-components/ListPerimetre',
+        roles: ['Admin', 'Agent'],
+      },
+      {
+        displayName: 'Rôle',
+        iconName: 'users-group',
+        iconColor: '#47a030',
+        route: '/ui-components/ListRole',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Statut',
-        iconName: 'file-plus',
+        iconName: 'file-unknown',
+        iconColor: '#47a030',
         route: '/ui-components/ListStatut',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Structure',
-        iconName: 'file-plus',
+        iconName: 'building',
+        iconColor: '#47a030',
         route: '/ui-components/ListStructure',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Type Carburant',
-        iconName: 'file-plus',
+        iconName: 'charging-pile',
+        iconColor: '#47a030',
         route: '/ui-components/ListTCarburant',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Type Véhicule',
-        iconName: 'file-plus',
+        iconName: 'stack-2',
+        iconColor: '#47a030',
         route: '/ui-components/ListCatVehicule',
         roles: ['Admin', 'Agent'],
       },
       {
         displayName: 'Type Intervention',
-        iconName: 'file-plus',
+        iconName: 'tool',
+        iconColor: '#47a030',
         route: '/ui-components/ListTIntervention',
         roles: ['Admin', 'Agent'],
       },
@@ -174,7 +217,7 @@ export const navItems: NavItem[] = [
 
   {
     displayName: 'Editions',
-    iconName: 'article',
+    iconName: 'device-desktop-analytics',
     roles: ['Admin', 'Agent'],
     children: [
       {
@@ -201,8 +244,8 @@ export const navItems: NavItem[] = [
   //------------------------------Rapports & Statistiques------------
 
   {
-    displayName: 'Rapports & Statistiques',
-    iconName: 'article',
+    displayName: 'Statistiques & Rapports',
+    iconName: 'chart-histogram',
     roles: ['Admin', 'Agent'],
     children: [
       {

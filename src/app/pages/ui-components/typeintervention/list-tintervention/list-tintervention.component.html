@@ -72,7 +72,7 @@
                 </form>
             </mat-dialog-content>
             <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
-                <button mat-flat-button color="warn" (click)="dialogRef.close()">Annuler</button>
+                <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
                 <button mat-flat-button color="primary" (click)="sauvegarderIntervention()">{{ isEdit ? 'Modifier' :
                     'Ajouter' }}</button>
             </mat-dialog-actions>
@@ -88,7 +88,7 @@
             <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{
                     selectedIntervention?.designation }}</span>?</div>
             <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
-                <button mat-flat-button color="warn" (click)="dialogRef.close()">Annuler</button>
+                <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
                 <button mat-flat-button color="primary" (click)="confirmerSuppression()">Supprimer</button>
             </div>
         </div>

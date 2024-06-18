@@ -5,6 +5,7 @@ export interface NavItem {
   twoLines?: boolean;
   chip?: boolean;
   iconName?: string;
+  iconColor?: string;
   navCap?: string;
   chipContent?: string;
   chipClass?: string;

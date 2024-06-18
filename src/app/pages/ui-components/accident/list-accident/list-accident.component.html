@@ -1,0 +1,175 @@
+<mat-card class="cardWithShadow theme-card">
+    <mat-card-header>
+        <div class="d-flex justify-content-between w-100">
+            <mat-card-title class="m-b-0 text-right">Accidents</mat-card-title>
+            <button mat-raised-button color="primary" (click)="ouvrirDialogAjout()">Nouveau</button>
+        </div>
+    </mat-card-header>
+    <mat-card-content class="b-t-1">
+        <div class="row">
+            <div class="col-lg-8">
+                <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
+                    <input matInput placeholder="Recherche" />
+                    <mat-icon matSuffix role="img">
+                        <i-tabler name="search" class="icon-20"></i-tabler>
+                    </mat-icon>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="table-responsive">
+                    <table mat-table [dataSource]="accidents" class="w-100">
+                        <ng-container matColumnDef="dateAccident">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date Accident
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateAccident | date:
+                                'dd/MM/yyyy' }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="description">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Description</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.description }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="lieuAccident">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Lieu d'Accident
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.lieuAccident }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="datePV">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date PV</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.datePV | date:
+                                'dd/MM/yyyy' }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="conducteur">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Conducteur</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{
+                                getAgentName(element.conducteur) }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="pv">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">PV</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1"><a [href]="element.pv"
+                                    target="_blank">Voir PV</a></td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="dossierPhoto">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Dossier Photo
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1"><a [href]="element.dossierPhoto"
+                                    target="_blank">Voir Dossier Photo</a></td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="actions">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Actions</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">
+                                <button mat-icon-button color="accent" (click)="ouvrirDialogModification(element)">
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                                <button mat-icon-button color="warn" (click)="ouvrirDialogSuppression(element)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
+                        aria-label="Sélectionner la page des accidents"></mat-paginator>
+                </div>
+            </div>
+        </div>
+    </mat-card-content>
+</mat-card>
+
+<!-- Dialog pour Ajouter/Modifier un Accident -->
+<ng-template #dialogAjoutModification let-dialogRef>
+    <div class="mdc-dialog__container">
+        <div class="mat-mdc-dialog-surface mdc-dialog__surface">
+            <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Accident' :
+                'Ajouter Accident' }}</h2>
+            <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
+                <form [formGroup]="accidentForm">
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Date Accident</mat-label>
+                                <input matInput formControlName="dateAccident" [matDatepicker]="pickerAccident" />
+                                <mat-datepicker-toggle matSuffix [for]="pickerAccident"></mat-datepicker-toggle>
+                                <mat-datepicker #pickerAccident></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Description</mat-label>
+                                <input matInput formControlName="description" />
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Lieu d'Accident</mat-label>
+                                <input matInput formControlName="lieuAccident" />
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Date PV</mat-label>
+                                <input matInput formControlName="datePV" [matDatepicker]="pickerPV" />
+                                <mat-datepicker-toggle matSuffix [for]="pickerPV"></mat-datepicker-toggle>
+                                <mat-datepicker #pickerPV></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Conducteur</mat-label>
+                                <mat-select formControlName="conducteur">
+                                    <mat-option *ngFor="let agent of agents" [value]="agent.matricule">
+                                        {{ agent.nom }} {{ agent.prenom }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <input type="file" formControlName="pv" (change)="onFileSelected($event, 'pv')"
+                                class="w-100" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <input type="file" formControlName="dossierPhoto"
+                                (change)="onFileSelected($event, 'dossierPhoto')" class="w-100" />
+                        </div>
+                    </div>
+                </form>
+            </mat-dialog-content>
+            <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
+                <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
+                <button mat-flat-button color="primary" (click)="sauvegarderAccident()">{{ isEdit ? 'Modifier' :
+                    'Ajouter' }}</button>
+            </mat-dialog-actions>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Dialog de Confirmation de Suppression -->
+<ng-template #dialogSuppression let-dialogRef>
+    <div class="mdc-dialog__container">
+        <div class="mat-mdc-dialog-surface mdc-dialog__surface">
+            <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Supprimer</h2>
+            <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer l'accident du <span
+                    class="f-w-600">{{ selectedAccident?.dateAccident | date: 'dd/MM/yyyy' }}</span>?</div>
+            <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
+                <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
+                <button mat-flat-button color="primary" (click)="confirmerSuppression()">Supprimer</button>
+            </div>
+        </div>
+    </div>
+</ng-template>

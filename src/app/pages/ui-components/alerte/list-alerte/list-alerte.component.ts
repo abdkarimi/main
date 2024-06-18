@@ -2,55 +2,62 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
-interface Role {
+interface Alerte {
   id: number;
-  designation: string;
   description: string;
+  kilometrageAlerte: number;
+  dateAlerte: Date;
+  statut: string;
 }
 
 @Component({
-  selector: 'app-list-role',
-  templateUrl: './list-role.component.html',
-  styleUrls: ['./list-role.component.scss'],
+  selector: 'app-list-alerte',
+  templateUrl: './list-alerte.component.html',
+  styleUrls: ['./list-alerte.component.scss'],
 })
-export class ListRoleComponent implements OnInit {
+export class ListAlerteComponent implements OnInit {
   @ViewChild('dialogAjoutModification')
   dialogAjoutModification: TemplateRef<any>;
   @ViewChild('dialogSuppression') dialogSuppression: TemplateRef<any>;
 
-  displayedColumns: string[] = ['id', 'designation', 'description', 'actions'];
-  roles: Role[] = [
+  displayedColumns: string[] = [
+    'id',
+    'description',
+    'kilometrageAlerte',
+    'dateAlerte',
+    'statut',
+    'actions',
+  ];
+  alertes: Alerte[] = [
     {
       id: 1,
-      designation: 'Agent',
-      description: 'Description 1',
+      description: 'Changement de pneu',
+      kilometrageAlerte: 50000,
+      dateAlerte: new Date('2023-01-01'),
+      statut: 'Activer',
     },
     {
       id: 2,
-      designation: 'Admin',
-      description: 'Description 2',
-    },
-    {
-      id: 2,
-      designation: 'Chef du Parc',
-      description: 'Description 3',
-    },
-    {
-      id: 2,
-      designation: 'Chef de Département',
-      description: 'Description 4',
+      description: 'Vidange',
+      kilometrageAlerte: 10000,
+      dateAlerte: new Date('2023-05-15'),
+      statut: 'Desactiver',
     },
   ];
 
-  selectedRole: Role;
+  statuts: string[] = ['Activer', 'Desactiver'];
+
+  selectedAlerte: Alerte;
   isEdit: boolean = false;
-  roleForm: FormGroup;
+  alerteForm: FormGroup;
 
   constructor(public dialog: MatDialog, private fb: FormBuilder) {
-    this.roleForm = this.fb.group({
+    this.alerteForm = this.fb.group({
       id: [''],
-      designation: [''],
       description: [''],
+      kilometrageAlerte: [''],
+      dateAlerte: [''],
+      statut: [''],
     });
   }
 
@@ -58,38 +65,38 @@ export class ListRoleComponent implements OnInit {
 
   ouvrirDialogAjout(): void {
     this.isEdit = false;
-    this.roleForm.reset();
+    this.alerteForm.reset();
     this.dialog.open(this.dialogAjoutModification, {
-      width: '600px',
+      width: '800px',
       autoFocus: false,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '400ms',
     });
   }
 
-  ouvrirDialogModification(role: Role): void {
+  ouvrirDialogModification(alerte: Alerte): void {
     this.isEdit = true;
-    this.selectedRole = role;
-    this.roleForm.patchValue(role);
+    this.selectedAlerte = alerte;
+    this.alerteForm.patchValue(alerte);
     this.dialog.open(this.dialogAjoutModification, {
-      width: '600px',
+      width: '800px',
       autoFocus: false,
       enterAnimationDuration: '400ms',
       exitAnimationDuration: '400ms',
     });
   }
 
-  sauvegarderRole(): void {
+  sauvegarderAlerte(): void {
     if (this.isEdit) {
-      Object.assign(this.selectedRole, this.roleForm.value);
+      Object.assign(this.selectedAlerte, this.alerteForm.value);
     } else {
-      this.roles.push(this.roleForm.value);
+      this.alertes.push(this.alerteForm.value);
     }
     this.dialog.closeAll();
   }
 
-  ouvrirDialogSuppression(role: Role): void {
-    this.selectedRole = role;
+  ouvrirDialogSuppression(alerte: Alerte): void {
+    this.selectedAlerte = alerte;
     this.dialog.open(this.dialogSuppression, {
       width: '400px',
       autoFocus: false,
@@ -103,7 +110,7 @@ export class ListRoleComponent implements OnInit {
   }
 
   confirmerSuppression(): void {
-    this.roles = this.roles.filter((r) => r !== this.selectedRole);
+    this.alertes = this.alertes.filter((a) => a !== this.selectedAlerte);
     this.fermerDialog();
   }
 }
