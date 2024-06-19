@@ -1,11 +1,11 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup } from '@angular/forms';
-
-interface Carburant {
-  id: string;
-  designation: string;
-}
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { TCarburant } from 'src/app/models/TCarburant';
+import { TcarburantService } from 'src/app/services/TCarburant/tcarburant.service';
 
 @Component({
   selector: 'app-list-tcarburant',
@@ -13,34 +13,48 @@ interface Carburant {
   styleUrls: ['./list-tcarburant.component.scss'],
 })
 export class ListTCarburantComponent implements OnInit {
-  @ViewChild('dialogAjoutModification')
-  dialogAjoutModification: TemplateRef<any>;
+  @ViewChild('dialogAjoutModification') dialogAjoutModification: TemplateRef<any>;
   @ViewChild('dialogSuppression') dialogSuppression: TemplateRef<any>;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  displayedColumns: string[] = ['id', 'designation', 'actions'];
-  carburants: Carburant[] = [
-    {
-      id: '1',
-      designation: 'Essence',
-    },
-    {
-      id: '2',
-      designation: 'Diesel',
-    },
-  ];
-
-  selectedCarburant: Carburant;
+  displayedColumns: string[] = ['idTypeCarburant', 'libelleTypeCarburant', 'actions'];
+  carburants: MatTableDataSource<TCarburant> = new MatTableDataSource();
+  selectedCarburant: TCarburant;
   isEdit: boolean = false;
   carburantForm: FormGroup;
 
-  constructor(public dialog: MatDialog, private fb: FormBuilder) {
+  constructor(
+    public dialog: MatDialog,
+    private fb: FormBuilder,
+    private tcarburantService: TcarburantService,
+    private toastr: ToastrService
+  ) {
     this.carburantForm = this.fb.group({
-      id: [''],
-      designation: [''],
+      idTypeCarburant: [''],
+      libelleTypeCarburant: ['', Validators.required],
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadCarburants();
+    this.carburants.paginator = this.paginator;
+  }
+
+  loadCarburants() {
+    this.tcarburantService.getAllTypeCarburants().subscribe((data: TCarburant[]) => {
+      this.carburants.data = data;
+      this.carburants.paginator = this.paginator;
+    });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.carburants.filter = filterValue.trim().toLowerCase();
+
+    if (this.carburants.paginator) {
+      this.carburants.paginator.firstPage();
+    }
+  }
 
   ouvrirDialogAjout(): void {
     this.isEdit = false;
@@ -48,39 +62,57 @@ export class ListTCarburantComponent implements OnInit {
     this.dialog.open(this.dialogAjoutModification, {
       width: '600px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
-  ouvrirDialogModification(carburant: Carburant): void {
+  ouvrirDialogModification(carburant: TCarburant): void {
     this.isEdit = true;
     this.selectedCarburant = carburant;
     this.carburantForm.patchValue(carburant);
     this.dialog.open(this.dialogAjoutModification, {
       width: '600px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
   sauvegarderCarburant(): void {
-    if (this.isEdit) {
-      Object.assign(this.selectedCarburant, this.carburantForm.value);
-    } else {
-      this.carburants.push(this.carburantForm.value);
+    if (this.carburantForm.invalid) {
+      this.toastr.error('Veuillez remplir correctement le formulaire', 'Erreur');
+      return;
     }
-    this.dialog.closeAll();
+
+    const carburant = this.carburantForm.value;
+
+    if (this.isEdit) {
+      this.tcarburantService.updateTypeCarburant(this.selectedCarburant.idTypeCarburant, carburant).subscribe(() => {
+        this.toastr.success('Type de carburant mis à jour avec succès', 'Succès');
+        this.loadCarburants();
+        this.dialog.closeAll();
+      }, () => {
+        this.toastr.error('Erreur lors de la mise à jour du type de carburant', 'Erreur');
+      });
+    } else {
+      this.tcarburantService.createTypeCarburant(carburant).subscribe(() => {
+        this.toastr.success('Type de carburant ajouté avec succès', 'Succès');
+        this.loadCarburants();
+        this.dialog.closeAll();
+      }, () => {
+        this.toastr.error("Erreur lors de l'ajout du type de carburant", 'Erreur');
+      });
+    }
   }
 
-  ouvrirDialogSuppression(carburant: Carburant): void {
+  ouvrirDialogSuppression(carburant: TCarburant): void {
     this.selectedCarburant = carburant;
     this.dialog.open(this.dialogSuppression, {
       width: '400px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -89,9 +121,12 @@ export class ListTCarburantComponent implements OnInit {
   }
 
   confirmerSuppression(): void {
-    this.carburants = this.carburants.filter(
-      (c) => c !== this.selectedCarburant
-    );
-    this.fermerDialog();
+    this.tcarburantService.deleteTypeCarburant(this.selectedCarburant.idTypeCarburant).subscribe(() => {
+      this.toastr.success('Type de carburant supprimé avec succès', 'Succès');
+      this.loadCarburants();
+      this.fermerDialog();
+    }, () => {
+      this.toastr.error('Erreur lors de la suppression du type de carburant', 'Erreur');
+    });
   }
 }
