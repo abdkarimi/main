@@ -1,12 +1,11 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup } from '@angular/forms';
-
-interface Role {
-  id: number;
-  designation: string;
-  description: string;
-}
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { Role } from 'src/app/models/Role';
+import { RoleService } from 'src/app/services/role/role.service';
 
 @Component({
   selector: 'app-list-role',
@@ -14,47 +13,49 @@ interface Role {
   styleUrls: ['./list-role.component.scss'],
 })
 export class ListRoleComponent implements OnInit {
-  @ViewChild('dialogAjoutModification')
-  dialogAjoutModification: TemplateRef<any>;
+  @ViewChild('dialogAjoutModification') dialogAjoutModification: TemplateRef<any>;
   @ViewChild('dialogSuppression') dialogSuppression: TemplateRef<any>;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  displayedColumns: string[] = ['id', 'designation', 'description', 'actions'];
-  roles: Role[] = [
-    {
-      id: 1,
-      designation: 'Agent',
-      description: 'Description 1',
-    },
-    {
-      id: 2,
-      designation: 'Admin',
-      description: 'Description 2',
-    },
-    {
-      id: 2,
-      designation: 'Chef du Parc',
-      description: 'Description 3',
-    },
-    {
-      id: 2,
-      designation: 'Chef de Département',
-      description: 'Description 4',
-    },
-  ];
-
+  displayedColumns: string[] = ['id', 'nom', 'description', 'actions'];
+  roles: MatTableDataSource<Role> = new MatTableDataSource();
   selectedRole: Role;
   isEdit: boolean = false;
   roleForm: FormGroup;
 
-  constructor(public dialog: MatDialog, private fb: FormBuilder) {
+  constructor(
+    public dialog: MatDialog,
+    private fb: FormBuilder,
+    private roleService: RoleService,
+    private toastr: ToastrService
+  ) {
     this.roleForm = this.fb.group({
       id: [''],
-      designation: [''],
-      description: [''],
+      nom: ['', Validators.required],
+      description: ['']
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadRoles();
+    this.roles.paginator = this.paginator;
+  }
+
+  loadRoles() {
+    this.roleService.getAllRoles().subscribe((data: Role[]) => {
+      this.roles.data = data;
+      this.roles.paginator = this.paginator;
+    });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.roles.filter = filterValue.trim().toLowerCase();
+
+    if (this.roles.paginator) {
+      this.roles.paginator.firstPage();
+    }
+  }
 
   ouvrirDialogAjout(): void {
     this.isEdit = false;
@@ -62,8 +63,8 @@ export class ListRoleComponent implements OnInit {
     this.dialog.open(this.dialogAjoutModification, {
       width: '600px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -74,18 +75,36 @@ export class ListRoleComponent implements OnInit {
     this.dialog.open(this.dialogAjoutModification, {
       width: '600px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
   sauvegarderRole(): void {
-    if (this.isEdit) {
-      Object.assign(this.selectedRole, this.roleForm.value);
-    } else {
-      this.roles.push(this.roleForm.value);
+    if (this.roleForm.invalid) {
+      this.toastr.error('Veuillez remplir correctement le formulaire', 'Erreur');
+      return;
     }
-    this.dialog.closeAll();
+
+    const role = this.roleForm.value;
+
+    if (this.isEdit) {
+      this.roleService.updateRole(this.selectedRole.id, role).subscribe(() => {
+        this.toastr.success('Rôle mis à jour avec succès', 'Succès');
+        this.loadRoles();
+        this.dialog.closeAll();
+      }, () => {
+        this.toastr.error('Erreur lors de la mise à jour du rôle', 'Erreur');
+      });
+    } else {
+      this.roleService.createRole(role).subscribe(() => {
+        this.toastr.success('Rôle ajouté avec succès', 'Succès');
+        this.loadRoles();
+        this.dialog.closeAll();
+      }, () => {
+        this.toastr.error("Erreur lors de l'ajout du rôle", 'Erreur');
+      });
+    }
   }
 
   ouvrirDialogSuppression(role: Role): void {
@@ -93,8 +112,8 @@ export class ListRoleComponent implements OnInit {
     this.dialog.open(this.dialogSuppression, {
       width: '400px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -103,7 +122,12 @@ export class ListRoleComponent implements OnInit {
   }
 
   confirmerSuppression(): void {
-    this.roles = this.roles.filter((r) => r !== this.selectedRole);
-    this.fermerDialog();
+    this.roleService.deleteRole(this.selectedRole.id).subscribe(() => {
+      this.toastr.success('Rôle supprimé avec succès', 'Succès');
+      this.loadRoles();
+      this.fermerDialog();
+    }, () => {
+      this.toastr.error('Erreur lors de la suppression du rôle', 'Erreur');
+    });
   }
 }

@@ -1,11 +1,11 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup } from '@angular/forms';
-
-interface Destination {
-  id: number;
-  designation: string;
-}
+import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { Destination } from 'src/app/models/Destination';
+import { DestinationService } from 'src/app/services/Destination/destination.service';
 
 @Component({
   selector: 'app-list-destination',
@@ -13,50 +13,45 @@ interface Destination {
   styleUrls: ['./list-destination.component.scss'],
 })
 export class ListDestinationComponent implements OnInit {
-  @ViewChild('dialogAjoutModification')
-  dialogAjoutModification: TemplateRef<any>;
+  @ViewChild('dialogAjoutModification') dialogAjoutModification: TemplateRef<any>;
   @ViewChild('dialogSuppression') dialogSuppression: TemplateRef<any>;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  displayedColumns: string[] = ['id', 'designation', 'actions'];
-  destinations: Destination[] = [
-    {
-      id: 1,
-      designation: 'Boujdour',
-    },
-    {
-      id: 2,
-      designation: 'Tarfaya',
-    },
-    {
-      id: 3,
-      designation: 'Es-Smara',
-    },
-    {
-      id: 4,
-      designation: 'El Marsa',
-    },
-    {
-      id: 5,
-      designation: 'Foum El Oued',
-    },
-    {
-      id: 6,
-      designation: 'Rabat',
-    },
-  ];
-
+  displayedColumns: string[] = ['idDestination', 'libelleDestination', 'actions'];
+  destinations: MatTableDataSource<Destination> = new MatTableDataSource();
   selectedDestination: Destination;
   isEdit: boolean = false;
   destinationForm: FormGroup;
+  searchControl: FormControl = new FormControl('');
 
-  constructor(public dialog: MatDialog, private fb: FormBuilder) {
+  constructor(
+    public dialog: MatDialog,
+    private fb: FormBuilder,
+    private destinationService: DestinationService,
+    private toastr: ToastrService
+  ) {
     this.destinationForm = this.fb.group({
-      id: [''],
-      designation: [''],
+      idDestination: [''],
+      libelleDestination: ['', Validators.required]
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadDestinations();
+    this.searchControl.valueChanges.subscribe(value => this.applyFilter(value));
+  }
+
+  loadDestinations() {
+    this.destinationService.getAllDestinations().subscribe((data: Destination[]) => {
+      this.destinations.data = data;
+      this.destinations.paginator = this.paginator;
+    });
+  }
+
+  applyFilter(filterValue: string) {
+    filterValue = filterValue.trim().toLowerCase();
+    this.destinations.filter = filterValue;
+  }
 
   ouvrirDialogAjout(): void {
     this.isEdit = false;
@@ -64,8 +59,8 @@ export class ListDestinationComponent implements OnInit {
     this.dialog.open(this.dialogAjoutModification, {
       width: '600px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -76,18 +71,36 @@ export class ListDestinationComponent implements OnInit {
     this.dialog.open(this.dialogAjoutModification, {
       width: '600px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
   sauvegarderDestination(): void {
-    if (this.isEdit) {
-      Object.assign(this.selectedDestination, this.destinationForm.value);
-    } else {
-      this.destinations.push(this.destinationForm.value);
+    if (this.destinationForm.invalid) {
+      this.toastr.error('Veuillez remplir correctement le formulaire', 'Erreur');
+      return;
     }
-    this.dialog.closeAll();
+
+    const destination = this.destinationForm.value;
+
+    if (this.isEdit) {
+      this.destinationService.updateDestination(this.selectedDestination.idDestination, destination).subscribe(() => {
+        this.toastr.success('Destination mise à jour avec succès', 'Succès');
+        this.loadDestinations();
+        this.dialog.closeAll();
+      }, () => {
+        this.toastr.error('Erreur lors de la mise à jour de la destination', 'Erreur');
+      });
+    } else {
+      this.destinationService.createDestination(destination).subscribe(() => {
+        this.toastr.success('Destination ajoutée avec succès', 'Succès');
+        this.loadDestinations();
+        this.dialog.closeAll();
+      }, () => {
+        this.toastr.error("Erreur lors de l'ajout de la destination", 'Erreur');
+      });
+    }
   }
 
   ouvrirDialogSuppression(destination: Destination): void {
@@ -95,8 +108,8 @@ export class ListDestinationComponent implements OnInit {
     this.dialog.open(this.dialogSuppression, {
       width: '400px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -105,9 +118,12 @@ export class ListDestinationComponent implements OnInit {
   }
 
   confirmerSuppression(): void {
-    this.destinations = this.destinations.filter(
-      (d) => d !== this.selectedDestination
-    );
-    this.fermerDialog();
+    this.destinationService.deleteDestination(this.selectedDestination.idDestination).subscribe(() => {
+      this.toastr.success('Destination supprimée avec succès', 'Succès');
+      this.loadDestinations();
+      this.fermerDialog();
+    }, () => {
+      this.toastr.error('Erreur lors de la suppression de la destination', 'Erreur');
+    });
   }
 }

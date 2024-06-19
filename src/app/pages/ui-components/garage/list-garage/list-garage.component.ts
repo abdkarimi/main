@@ -1,16 +1,12 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { Garage } from 'src/app/models/garage';
+import { GarageService } from 'src/app/services/garage/garage.service';
 
-interface Garage {
-  nom: string;
-  adresse: string;
-  tel: string;
-  email: string;
-  fax: string;
-  nomresp: string;
-  gsmresp: string;
-}
 
 @Component({
   selector: 'app-list-garage',
@@ -18,58 +14,64 @@ interface Garage {
   styleUrls: ['./list-garage.component.scss'],
 })
 export class ListGarageComponent implements OnInit {
-  @ViewChild('dialogAjoutModification')
-  dialogAjoutModification: TemplateRef<any>;
+  @ViewChild('dialogAjoutModification') dialogAjoutModification: TemplateRef<any>;
   @ViewChild('dialogSuppression') dialogSuppression: TemplateRef<any>;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   displayedColumns: string[] = [
-    'nom',
-    'adresse',
-    'tel',
-    'email',
-    'fax',
-    'nomresp',
-    'gsmresp',
+    'nomGarage',
+    'adresseGarage',
+    'telGarage',
+    'emailGarage',
+    'faxGarage',
+    'nomResponsableG',
+    'gsmGarage',
     'actions',
   ];
-  garages: Garage[] = [
-    {
-      nom: 'Garage 1',
-      adresse: 'Adresse 1',
-      tel: '0123456789',
-      email: 'email1@example.com',
-      fax: '0123456789',
-      nomresp: 'Responsable 1',
-      gsmresp: '0612345678',
-    },
-    {
-      nom: 'Garage 2',
-      adresse: 'Adresse 2',
-      tel: '0123456789',
-      email: 'email2@example.com',
-      fax: '0123456789',
-      nomresp: 'Responsable 2',
-      gsmresp: '0612345678',
-    },
-  ];
-
+  garages: MatTableDataSource<Garage> = new MatTableDataSource();
   selectedGarage: Garage;
   isEdit: boolean = false;
   garageForm: FormGroup;
+  searchControl: FormControl = new FormControl('');
 
-  constructor(public dialog: MatDialog, private fb: FormBuilder) {
+  constructor(
+    public dialog: MatDialog,
+    private fb: FormBuilder,
+    private garageService: GarageService,
+    private toastr: ToastrService
+  ) {
     this.garageForm = this.fb.group({
-      nom: [''],
-      adresse: [''],
-      tel: [''],
-      email: [''],
-      fax: [''],
-      nomresp: [''],
-      gsmresp: [''],
+      idGarage: [{ value: '', disabled: true }],
+      nomGarage: ['', Validators.required],
+      adresseGarage: ['', Validators.required],
+      telGarage: ['', Validators.required],
+      emailGarage: ['', [Validators.required, Validators.email]],
+      faxGarage: [''],
+      nomResponsableG: ['', Validators.required],
+      gsmGarage: ['', Validators.required],
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadGarages();
+    this.searchControl.valueChanges.subscribe(value => this.applyFilter(value));
+  }
+
+  loadGarages() {
+    this.garageService.getAllGarages().subscribe((data: Garage[]) => {
+      this.garages.data = data;
+      this.garages.paginator = this.paginator;
+    });
+  }
+
+  applyFilter(filterValue: string) {
+    filterValue = filterValue.trim().toLowerCase();
+    this.garages.filter = filterValue;
+  }
+
+  onPageChange(event: any) {
+    this.garages.paginator = this.paginator;
+  }
 
   ouvrirDialogAjout(): void {
     this.isEdit = false;
@@ -77,8 +79,8 @@ export class ListGarageComponent implements OnInit {
     this.dialog.open(this.dialogAjoutModification, {
       width: '600px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -89,18 +91,36 @@ export class ListGarageComponent implements OnInit {
     this.dialog.open(this.dialogAjoutModification, {
       width: '600px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
   sauvegarderGarage(): void {
-    if (this.isEdit) {
-      Object.assign(this.selectedGarage, this.garageForm.value);
-    } else {
-      this.garages.push(this.garageForm.value);
+    if (this.garageForm.invalid) {
+      this.toastr.error('Veuillez remplir correctement le formulaire', 'Erreur');
+      return;
     }
-    this.dialog.closeAll();
+
+    const garage = this.garageForm.getRawValue();
+
+    if (this.isEdit) {
+      this.garageService.updateGarage(this.selectedGarage.idGarage, garage).subscribe(() => {
+        this.toastr.success('Garage mis à jour avec succès', 'Succès');
+        this.loadGarages();
+        this.dialog.closeAll();
+      }, () => {
+        this.toastr.error('Erreur lors de la mise à jour du garage', 'Erreur');
+      });
+    } else {
+      this.garageService.createGarage(garage).subscribe(() => {
+        this.toastr.success('Garage ajouté avec succès', 'Succès');
+        this.loadGarages();
+        this.dialog.closeAll();
+      }, () => {
+        this.toastr.error('Erreur lors de l\'ajout du garage', 'Erreur');
+      });
+    }
   }
 
   ouvrirDialogSuppression(garage: Garage): void {
@@ -108,8 +128,8 @@ export class ListGarageComponent implements OnInit {
     this.dialog.open(this.dialogSuppression, {
       width: '400px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -118,7 +138,12 @@ export class ListGarageComponent implements OnInit {
   }
 
   confirmerSuppression(): void {
-    this.garages = this.garages.filter((g) => g !== this.selectedGarage);
-    this.fermerDialog();
+    this.garageService.deleteGarage(this.selectedGarage.idGarage).subscribe(() => {
+      this.toastr.success('Garage supprimé avec succès', 'Succès');
+      this.loadGarages();
+      this.fermerDialog();
+    }, () => {
+      this.toastr.error('Erreur lors de la suppression du garage', 'Erreur');
+    });
   }
 }

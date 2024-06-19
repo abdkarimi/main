@@ -1,15 +1,11 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup } from '@angular/forms';
-
-interface Concessionnaire {
-  nom: string;
-  adresse: string;
-  tel: string;
-  gsm: string;
-  fax: string;
-  email: string;
-}
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { Concessionnaire } from 'src/app/models/Concessionnaire';
+import { ConcessionnaireService } from 'src/app/services/Concessionnaire/concessionnaire.service';
 
 @Component({
   selector: 'app-list-concessionnaire',
@@ -19,43 +15,48 @@ interface Concessionnaire {
 export class ListConcessionnaireComponent implements OnInit {
   @ViewChild('dialogAddEdit') dialogAddEdit: TemplateRef<any>;
   @ViewChild('dialogDelete') dialogDelete: TemplateRef<any>;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  displayedColumns: string[] = ['nom', 'adresse', 'tel', 'gsm', 'fax', 'email', 'actions'];
-  concessionnaires: Concessionnaire[] = [
-    {
-      nom: 'Concessionnaire 1',
-      adresse: 'Adresse 1',
-      tel: '0123456789',
-      gsm: '0612345678',
-      fax: '0123456789',
-      email: 'email1@example.com',
-    },
-    {
-      nom: 'Concessionnaire 2',
-      adresse: 'Adresse 2',
-      tel: '0123456789',
-      gsm: '0612345678',
-      fax: '0123456789',
-      email: 'email2@example.com',
-    },
-  ];
-
+  displayedColumns: string[] = ['nomConcessionnaire', 'adresseConcessionnaire', 'telConcessionnaire', 'gsmConcessionnaire', 'faxConcessionnaire', 'email', 'actions'];
+  concessionnaires: MatTableDataSource<Concessionnaire> = new MatTableDataSource();
   selectedConcessionnaire: Concessionnaire;
   isEdit: boolean = false;
   concessionnaireForm: FormGroup;
+  searchControl: FormControl = new FormControl('');
 
-  constructor(public dialog: MatDialog, private fb: FormBuilder) {
+  constructor(
+    public dialog: MatDialog,
+    private fb: FormBuilder,
+    private concessionnaireService: ConcessionnaireService,
+    private toastr: ToastrService
+  ) {
     this.concessionnaireForm = this.fb.group({
-      nom: [''],
-      adresse: [''],
-      tel: [''],
-      gsm: [''],
-      fax: [''],
-      email: ['']
+      idConcessionnaire: [''],
+      nomConcessionnaire: ['', Validators.required],
+      adresseConcessionnaire: ['', Validators.required],
+      telConcessionnaire: ['', Validators.required],
+      gsmConcessionnaire: ['', Validators.required],
+      faxConcessionnaire: [''],
+      email: ['', [Validators.required, Validators.email]]
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadConcessionnaires();
+    this.searchControl.valueChanges.subscribe(value => this.applyFilter(value));
+  }
+
+  loadConcessionnaires() {
+    this.concessionnaireService.getAllConcessionnaires().subscribe((data: Concessionnaire[]) => {
+      this.concessionnaires.data = data;
+      this.concessionnaires.paginator = this.paginator;
+    });
+  }
+
+  applyFilter(filterValue: string) {
+    filterValue = filterValue.trim().toLowerCase();
+    this.concessionnaires.filter = filterValue;
+  }
 
   openAddDialog(): void {
     this.isEdit = false;
@@ -63,8 +64,8 @@ export class ListConcessionnaireComponent implements OnInit {
     this.dialog.open(this.dialogAddEdit, {
       width: '600px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms'
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -75,18 +76,36 @@ export class ListConcessionnaireComponent implements OnInit {
     this.dialog.open(this.dialogAddEdit, {
       width: '600px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms'
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
   saveConcessionnaire(): void {
-    if (this.isEdit) {
-      Object.assign(this.selectedConcessionnaire, this.concessionnaireForm.value);
-    } else {
-      this.concessionnaires.push(this.concessionnaireForm.value);
+    if (this.concessionnaireForm.invalid) {
+      this.toastr.error('Veuillez remplir correctement le formulaire', 'Erreur');
+      return;
     }
-    this.dialog.closeAll();
+
+    const concessionnaire = this.concessionnaireForm.value;
+
+    if (this.isEdit) {
+      this.concessionnaireService.updateConcessionnaire(this.selectedConcessionnaire.idConcessionnaire, concessionnaire).subscribe(() => {
+        this.toastr.success('Concessionnaire mis à jour avec succès', 'Succès');
+        this.loadConcessionnaires();
+        this.dialog.closeAll();
+      }, () => {
+        this.toastr.error('Erreur lors de la mise à jour du concessionnaire', 'Erreur');
+      });
+    } else {
+      this.concessionnaireService.createConcessionnaire(concessionnaire).subscribe(() => {
+        this.toastr.success('Concessionnaire ajouté avec succès', 'Succès');
+        this.loadConcessionnaires();
+        this.dialog.closeAll();
+      }, () => {
+        this.toastr.error("Erreur lors de l'ajout du concessionnaire", 'Erreur');
+      });
+    }
   }
 
   openDeleteDialog(concessionnaire: Concessionnaire): void {
@@ -94,8 +113,8 @@ export class ListConcessionnaireComponent implements OnInit {
     this.dialog.open(this.dialogDelete, {
       width: '400px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms'
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -104,7 +123,12 @@ export class ListConcessionnaireComponent implements OnInit {
   }
 
   confirmDelete(): void {
-    this.concessionnaires = this.concessionnaires.filter(c => c !== this.selectedConcessionnaire);
-    this.closeDialog();
+    this.concessionnaireService.deleteConcessionnaire(this.selectedConcessionnaire.idConcessionnaire).subscribe(() => {
+      this.toastr.success('Concessionnaire supprimé avec succès', 'Succès');
+      this.loadConcessionnaires();
+      this.closeDialog();
+    }, () => {
+      this.toastr.error('Erreur lors de la suppression du concessionnaire', 'Erreur');
+    });
   }
 }

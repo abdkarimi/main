@@ -9,7 +9,7 @@
     <div class="row">
       <div class="col-lg-8">
         <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
-          <input matInput placeholder="Recherche" />
+          <input matInput placeholder="Recherche" [formControl]="searchControl" />
           <mat-icon matSuffix role="img">
             <i-tabler name="search" class="icon-20"></i-tabler>
           </mat-icon>
@@ -19,40 +19,40 @@
     <div class="row ">
       <div class="col-lg-12">
         <div class="table-responsive">
-          <table mat-table [dataSource]="garages" class="w-100">
-            <ng-container matColumnDef="nom">
-              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Nom</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.nom }}</td>
+          <table mat-table [dataSource]="garages" class="w-100" matSort>
+            <ng-container matColumnDef="nomGarage">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="f-w-600 mat-subtitle-1 f-s-14">Nom</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.nomGarage }}</td>
             </ng-container>
 
-            <ng-container matColumnDef="adresse">
-              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Adresse</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.adresse }}</td>
+            <ng-container matColumnDef="adresseGarage">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="f-w-600 mat-subtitle-1 f-s-14">Adresse</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.adresseGarage }}</td>
             </ng-container>
 
-            <ng-container matColumnDef="tel">
-              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Tél</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.tel }}</td>
+            <ng-container matColumnDef="telGarage">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="f-w-600 mat-subtitle-1 f-s-14">Tél</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.telGarage }}</td>
             </ng-container>
 
-            <ng-container matColumnDef="email">
-              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Email</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.email }}</td>
+            <ng-container matColumnDef="emailGarage">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="f-w-600 mat-subtitle-1 f-s-14">Email</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.emailGarage }}</td>
             </ng-container>
 
-            <ng-container matColumnDef="fax">
-              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Fax</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.fax }}</td>
+            <ng-container matColumnDef="faxGarage">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="f-w-600 mat-subtitle-1 f-s-14">Fax</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.faxGarage }}</td>
             </ng-container>
 
-            <ng-container matColumnDef="nomresp">
-              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Responsable</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.nomresp }}</td>
+            <ng-container matColumnDef="nomResponsableG">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="f-w-600 mat-subtitle-1 f-s-14">Responsable</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.nomResponsableG }}</td>
             </ng-container>
 
-            <ng-container matColumnDef="gsmresp">
-              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Gsm</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.gsmresp }}</td>
+            <ng-container matColumnDef="gsmGarage">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="f-w-600 mat-subtitle-1 f-s-14">Gsm</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.gsmGarage }}</td>
             </ng-container>
 
             <ng-container matColumnDef="actions">
@@ -71,7 +71,8 @@
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>
           <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
-            aria-label="Sélectionner la page des garages"></mat-paginator>
+            aria-label="Sélectionner la page des garages" [length]="garages.data.length" [pageSize]="5"
+            (page)="onPageChange($event)"></mat-paginator>
         </div>
       </div>
     </div>
@@ -82,48 +83,89 @@
 <ng-template #dialogAjoutModification let-dialogRef>
   <div class="mdc-dialog__container">
     <div class="mat-mdc-dialog-surface mdc-dialog__surface">
-      <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Garage' : 'Ajouter
-        Garage' }}</h2>
+      <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Garage' : 'Ajouter Garage' }}</h2>
       <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
         <form [formGroup]="garageForm">
+          <ng-container *ngIf="isEdit">
+            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+              <mat-label>Id Garage</mat-label>
+              <input matInput formControlName="idGarage" disabled />
+            </mat-form-field>
+          </ng-container>
           <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
             <mat-label>Nom</mat-label>
-            <input matInput formControlName="nom" />
+            <input matInput formControlName="nomGarage"
+              [ngClass]="{'is-invalid': garageForm.get('nomGarage').invalid && (garageForm.get('nomGarage').dirty || garageForm.get('nomGarage').touched)}" />
+            <div
+              *ngIf="garageForm.get('nomGarage').invalid && (garageForm.get('nomGarage').dirty || garageForm.get('nomGarage').touched)"
+              class="invalid-feedback">
+              <div *ngIf="garageForm.get('nomGarage').errors.required">Le nom du garage est requis.</div>
+            </div>
           </mat-form-field>
           <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
             <mat-label>Adresse</mat-label>
-            <input matInput formControlName="adresse" />
+            <input matInput formControlName="adresseGarage"
+              [ngClass]="{'is-invalid': garageForm.get('adresseGarage').invalid && (garageForm.get('adresseGarage').dirty || garageForm.get('adresseGarage').touched)}" />
+            <div
+              *ngIf="garageForm.get('adresseGarage').invalid && (garageForm.get('adresseGarage').dirty || garageForm.get('adresseGarage').touched)"
+              class="invalid-feedback">
+              <div *ngIf="garageForm.get('adresseGarage').errors.required">L'adresse du garage est requise.</div>
+            </div>
           </mat-form-field>
           <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
             <mat-label>Tél</mat-label>
-            <input matInput formControlName="tel" />
+            <input matInput formControlName="telGarage"
+              [ngClass]="{'is-invalid': garageForm.get('telGarage').invalid && (garageForm.get('telGarage').dirty || garageForm.get('telGarage').touched)}" />
+            <div
+              *ngIf="garageForm.get('telGarage').invalid && (garageForm.get('telGarage').dirty || garageForm.get('telGarage').touched)"
+              class="invalid-feedback">
+              <div *ngIf="garageForm.get('telGarage').errors.required">Le téléphone du garage est requis.</div>
+            </div>
           </mat-form-field>
           <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
             <mat-label>Email</mat-label>
-            <input matInput formControlName="email" />
+            <input matInput formControlName="emailGarage"
+              [ngClass]="{'is-invalid': garageForm.get('emailGarage').invalid && (garageForm.get('emailGarage').dirty || garageForm.get('emailGarage').touched)}" />
+            <div
+              *ngIf="garageForm.get('emailGarage').invalid && (garageForm.get('emailGarage').dirty || garageForm.get('emailGarage').touched)"
+              class="invalid-feedback">
+              <div *ngIf="garageForm.get('emailGarage').errors.required">L'email du garage est requis.</div>
+              <div *ngIf="garageForm.get('emailGarage').errors.email">L'email du garage est invalide.</div>
+            </div>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
             <mat-label>Fax</mat-label>
-            <input matInput formControlName="fax" />
+            <input matInput formControlName="faxGarage" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
             <mat-label>Responsable</mat-label>
-            <input matInput formControlName="nomresp" />
+            <input matInput formControlName="nomResponsableG"
+              [ngClass]="{'is-invalid': garageForm.get('nomResponsableG').invalid && (garageForm.get('nomResponsableG').dirty || garageForm.get('nomResponsableG').touched)}" />
+            <div
+              *ngIf="garageForm.get('nomResponsableG').invalid && (garageForm.get('nomResponsableG').dirty || garageForm.get('nomResponsableG').touched)"
+              class="invalid-feedback">
+              <div *ngIf="garageForm.get('nomResponsableG').errors.required">Le nom du responsable est requis.</div>
+            </div>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
             <mat-label>GSM</mat-label>
-            <input matInput formControlName="gsmresp" />
+            <input matInput formControlName="gsmGarage"
+              [ngClass]="{'is-invalid': garageForm.get('gsmGarage').invalid && (garageForm.get('gsmGarage').dirty || garageForm.get('gsmGarage').touched)}" />
+            <div
+              *ngIf="garageForm.get('gsmGarage').invalid && (garageForm.get('gsmGarage').dirty || garageForm.get('gsmGarage').touched)"
+              class="invalid-feedback">
+              <div *ngIf="garageForm.get('gsmGarage').errors.required">Le GSM du garage est requis.</div>
+            </div>
           </mat-form-field>
 
         </form>
       </mat-dialog-content>
       <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
         <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
-        <button mat-flat-button color="primary" (click)="sauvegarderGarage()">{{ isEdit ? 'Modifier' : 'Ajouter'
-          }}</button>
+        <button mat-flat-button color="primary" (click)="sauvegarderGarage()">{{ isEdit ? 'Modifier' : 'Ajouter' }}</button>
       </mat-dialog-actions>
     </div>
   </div>
@@ -134,8 +176,7 @@
   <div class="mdc-dialog__container">
     <div class="mat-mdc-dialog-surface mdc-dialog__surface">
       <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Supprimer</h2>
-      <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{
-          selectedGarage?.nom }}</span>?</div>
+      <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{ selectedGarage?.nomGarage }}</span>?</div>
       <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
         <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
         <button mat-flat-button color="primary" (click)="confirmerSuppression()">Supprimer</button>
