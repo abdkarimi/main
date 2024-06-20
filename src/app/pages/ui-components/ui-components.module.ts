@@ -50,6 +50,7 @@ import { ListVehiculeComponent } from './vehicule/list-vehicule/list-vehicule.co
 import { ListAccidentComponent } from './accident/list-accident/list-accident.component';
 import { ListAlerteComponent } from './alerte/list-alerte/list-alerte.component';
 import { ListInterventionComponent } from './intervention/list-intervention/list-intervention.component';
+import { ConsommationCarburantComponent } from './edition/consommation-carburant/consommation-carburant.component';
 
 
 @NgModule({
@@ -99,6 +100,7 @@ import { ListInterventionComponent } from './intervention/list-intervention/list
     ListAccidentComponent,
     ListAlerteComponent,
     ListInterventionComponent,
+    ConsommationCarburantComponent,
 
   ],
 })

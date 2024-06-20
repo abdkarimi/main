@@ -224,7 +224,7 @@ export const navItems: NavItem[] = [
         displayName: 'Etat du carburant',
         iconName: 'device-imac-dollar',
         iconColor: '#47a030',
-        route: '/ui-components/SupprimerC',
+        route: '/ui-components/ConsommationCarburant',
         roles: ['Admin', 'Agent'],
       },
       {

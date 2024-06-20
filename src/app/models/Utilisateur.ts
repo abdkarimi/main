@@ -1,4 +1,7 @@
-interface Utilisateur {
+import { Role } from "./Role";
+import { Structure } from "./Structure";
+
+export interface Utilisateur {
   id: number;
   matricule: string;
   nom: string;
@@ -8,8 +11,9 @@ interface Utilisateur {
   password: string;
   tel: string;
   adresse: string;
-  dateDeNaissance: string; // Assuming date is represented as a string
+  dateDeNaissance: Date;
+  dateDeRecrutement: Date;
   photo: string;
-  departement: Departement;
-  role: Role;
+  idRole: Role;
+  structure: Structure;
 }

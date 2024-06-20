@@ -1,22 +1,12 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup } from '@angular/forms';
-
-interface Agent {
-  matricule: number;
-  nom: string;
-  prenom: string;
-  dateNaissance: Date;
-  dateRecrutement: Date;
-  affectation: number;
-  role: string;
-  photo: string;
-}
-
-interface Structure {
-  id: number;
-  designation: string;
-}
+import { Utilisateur } from 'src/app/models/Utilisateur';
+import { Structure } from 'src/app/models/Structure';
+import { Role } from 'src/app/models/Role';
+import { AgentService } from 'src/app/services/Agent/agent.service';
+import { StructureService } from 'src/app/services/Structure/structure.service';
+import { RoleService } from 'src/app/services/role/role.service';
 
 @Component({
   selector: 'app-list-agent',
@@ -32,60 +22,69 @@ export class ListAgentComponent implements OnInit {
     'matricule',
     'nom',
     'prenom',
-    'dateNaissance',
-    'dateRecrutement',
-    'affectation',
+    'dateDeNaissance',
+    'dateDeRecrutement',
+    'structure',
     'role',
     'actions',
   ];
-  agents: Agent[] = [
-    {
-      matricule: 1,
-      nom: 'Dupont',
-      prenom: 'Jean',
-      dateNaissance: new Date('1980-01-01'),
-      dateRecrutement: new Date('2010-06-15'),
-      affectation: 1,
-      role: 'Agent',
-      photo: 'https://via.placeholder.com/150'
-    },
-    {
-      matricule: 2,
-      nom: 'Martin',
-      prenom: 'Marie',
-      dateNaissance: new Date('1990-03-12'),
-      dateRecrutement: new Date('2015-04-20'),
-      affectation: 2,
-      role: 'Admin',
-      photo: 'https://via.placeholder.com/150'
-    },
-  ];
 
-  structures: Structure[] = [
-    { id: 1, designation: 'Structure 1' },
-    { id: 2, designation: 'Structure 2' },
-  ];
+  agents: Utilisateur[] = [];
+  structures: Structure[] = [];
+  roles: Role[] = [];
 
-  roles: string[] = ['Agent', 'Admin', 'Chef du Parc', 'Chef de Département'];
-
-  selectedAgent: Agent;
+  selectedAgent: Utilisateur;
   isEdit: boolean = false;
   agentForm: FormGroup;
+  imgURL: any;
 
-  constructor(public dialog: MatDialog, private fb: FormBuilder) {
+  constructor(
+    public dialog: MatDialog,
+    private fb: FormBuilder,
+    private agentService: AgentService,
+    private roleService: RoleService,
+    private structureService: StructureService
+  ) {
     this.agentForm = this.fb.group({
       matricule: [''],
       nom: [''],
       prenom: [''],
-      dateNaissance: [''],
-      dateRecrutement: [''],
-      affectation: [''],
-      role: [''],
+      username: [''],
+      email: [''],
+      password: [''],
+      tel: [''],
+      adresse: [''],
+      dateDeNaissance: [''],
+      dateDeRecrutement: [''],
+      structure: [''],
+      idRole: [''],
       photo: ['']
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadAgents();
+    this.loadStructures();
+    this.loadRoles();
+  }
+
+  loadAgents(): void {
+    this.agentService.getAllUtilisateurs().subscribe((data: Utilisateur[]) => {
+      this.agents = data;
+    });
+  }
+
+  loadStructures(): void {
+    this.structureService.obtenirToutesStructures().subscribe((data: Structure[]) => {
+      this.structures = data;
+    });
+  }
+
+  loadRoles(): void {
+    this.roleService.getAllRoles().subscribe((data: Role[]) => {
+      this.roles = data;
+    });
+  }
 
   ouvrirDialogAjout(): void {
     this.isEdit = false;
@@ -98,7 +97,7 @@ export class ListAgentComponent implements OnInit {
     });
   }
 
-  ouvrirDialogModification(agent: Agent): void {
+  ouvrirDialogModification(agent: Utilisateur): void {
     this.isEdit = true;
     this.selectedAgent = agent;
     this.agentForm.patchValue(agent);
@@ -116,22 +115,29 @@ export class ListAgentComponent implements OnInit {
       const file = fileInput.files[0];
       const reader = new FileReader();
       reader.onload = () => {
+        this.imgURL = reader.result;
         this.agentForm.patchValue({ photo: reader.result as string });
       };
       reader.readAsDataURL(file);
     }
   }
 
-  sauvegarderAgent(): void {
+  sauvegarderAgent(fileInput: any): void {
+    const file: File = fileInput.files[0];
+
     if (this.isEdit) {
-      Object.assign(this.selectedAgent, this.agentForm.value);
+      this.agentService.updateUtilisateur(this.agentForm.value, file).subscribe(() => {
+        this.loadAgents();
+      });
     } else {
-      this.agents.push(this.agentForm.value);
+      this.agentService.saveUtilisateur(this.agentForm.value, file).subscribe(() => {
+        this.loadAgents();
+      });
     }
     this.dialog.closeAll();
   }
 
-  ouvrirDialogSuppression(agent: Agent): void {
+  ouvrirDialogSuppression(agent: Utilisateur): void {
     this.selectedAgent = agent;
     this.dialog.open(this.dialogSuppression, {
       width: '400px',
@@ -146,12 +152,14 @@ export class ListAgentComponent implements OnInit {
   }
 
   confirmerSuppression(): void {
-    this.agents = this.agents.filter(a => a !== this.selectedAgent);
-    this.fermerDialog();
+    this.agentService.deleteUtilisateur(this.selectedAgent.id).subscribe(() => {
+      this.agents = this.agents.filter(a => a !== this.selectedAgent);
+      this.fermerDialog();
+    });
   }
 
   getStructureName(structureId: number): string {
-    const structure = this.structures.find(s => s.id === structureId);
-    return structure ? structure.designation : '';
+    const structure = this.structures.find(s => s.idStructure === structureId);
+    return structure ? structure.nomStructure : '';
   }
 }
