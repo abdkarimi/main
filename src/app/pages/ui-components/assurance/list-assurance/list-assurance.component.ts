@@ -5,9 +5,21 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 interface Assurance {
   id: number;
   numPolice: string;
+  compagnie: number;
+  vehicule: number;
   dateDebutGarantie: Date;
   dateFinGarantie: Date;
   attestation: string;
+}
+
+interface Compagnie {
+  id: number;
+  nom: string;
+}
+
+interface Vehicule {
+  id: number;
+  designation: string;
 }
 
 @Component({
@@ -22,15 +34,20 @@ export class ListAssuranceComponent implements OnInit {
   displayedColumns: string[] = [
     'id',
     'numPolice',
+    'compagnie',
+    'vehicule',
     'dateDebutGarantie',
     'dateFinGarantie',
     'attestation',
     'actions',
   ];
+
   assurances: Assurance[] = [
     {
       id: 1,
       numPolice: 'AB12345',
+      compagnie: 1,
+      vehicule: 1,
       dateDebutGarantie: new Date('2022-01-01'),
       dateFinGarantie: new Date('2023-01-01'),
       attestation: 'https://via.placeholder.com/150'
@@ -38,10 +55,22 @@ export class ListAssuranceComponent implements OnInit {
     {
       id: 2,
       numPolice: 'CD67890',
+      compagnie: 2,
+      vehicule: 2,
       dateDebutGarantie: new Date('2021-05-15'),
       dateFinGarantie: new Date('2022-05-15'),
       attestation: 'https://via.placeholder.com/150'
     },
+  ];
+
+  compagnies: Compagnie[] = [
+    { id: 1, nom: 'Compagnie A' },
+    { id: 2, nom: 'Compagnie B' },
+  ];
+
+  vehicules: Vehicule[] = [
+    { id: 1, designation: 'Peugeot 208' },
+    { id: 2, designation: 'Renault Clio' },
   ];
 
   selectedAssurance: Assurance;
@@ -50,8 +79,10 @@ export class ListAssuranceComponent implements OnInit {
 
   constructor(public dialog: MatDialog, private fb: FormBuilder) {
     this.assuranceForm = this.fb.group({
-      id: [''],
+      id: [{ value: '', disabled: true }],
       numPolice: [''],
+      compagnie: [''],
+      vehicule: [''],
       dateDebutGarantie: [''],
       dateFinGarantie: [''],
       attestation: ['']
@@ -96,10 +127,11 @@ export class ListAssuranceComponent implements OnInit {
   }
 
   sauvegarderAssurance(): void {
+    const assuranceData = this.assuranceForm.getRawValue();
     if (this.isEdit) {
-      Object.assign(this.selectedAssurance, this.assuranceForm.value);
+      Object.assign(this.selectedAssurance, assuranceData);
     } else {
-      this.assurances.push(this.assuranceForm.value);
+      this.assurances.push(assuranceData);
     }
     this.dialog.closeAll();
   }
@@ -121,5 +153,15 @@ export class ListAssuranceComponent implements OnInit {
   confirmerSuppression(): void {
     this.assurances = this.assurances.filter(a => a !== this.selectedAssurance);
     this.fermerDialog();
+  }
+
+  getCompagnieName(compagnieId: number): string {
+    const compagnie = this.compagnies.find(c => c.id === compagnieId);
+    return compagnie ? compagnie.nom : '';
+  }
+
+  getVehiculeName(vehiculeId: number): string {
+    const vehicule = this.vehicules.find(v => v.id === vehiculeId);
+    return vehicule ? vehicule.designation : '';
   }
 }

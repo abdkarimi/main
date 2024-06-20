@@ -30,17 +30,19 @@
                             <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.description }}</td>
                         </ng-container>
 
+                        <ng-container matColumnDef="vehicule">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Véhicule</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ getVehiculeName(element.vehicule) }}</td>
+                        </ng-container>
+
                         <ng-container matColumnDef="kilometrageAlerte">
-                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Kilométrage
-                                Alerte</th>
-                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.kilometrageAlerte }}
-                            </td>
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Kilométrage Alerte</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.kilometrageAlerte }}</td>
                         </ng-container>
 
                         <ng-container matColumnDef="dateAlerte">
                             <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date Alerte</th>
-                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateAlerte | date:
-                                'dd/MM/yyyy' }}</td>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateAlerte | date: 'dd/MM/yyyy' }}</td>
                         </ng-container>
 
                         <ng-container matColumnDef="statut">
@@ -63,8 +65,7 @@
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                     </table>
-                    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
-                        aria-label="Sélectionner la page des alertes"></mat-paginator>
+                    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Sélectionner la page des alertes"></mat-paginator>
                 </div>
             </div>
         </div>
@@ -75,21 +76,32 @@
 <ng-template #dialogAjoutModification let-dialogRef>
     <div class="mdc-dialog__container">
         <div class="mat-mdc-dialog-surface mdc-dialog__surface">
-            <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Alerte' : 'Ajouter
-                Alerte' }}</h2>
+            <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Alerte' : 'Ajouter Alerte' }}</h2>
             <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
                 <form [formGroup]="alerteForm">
                     <div class="row">
                         <div class="col">
                             <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                                 <mat-label>ID</mat-label>
-                                <input matInput formControlName="id" type="number" />
+                                <input matInput formControlName="id" type="number" disabled />
                             </mat-form-field>
                         </div>
                         <div class="col">
                             <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                                 <mat-label>Description</mat-label>
                                 <input matInput formControlName="description" />
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Véhicule</mat-label>
+                                <mat-select formControlName="vehicule">
+                                    <mat-option *ngFor="let vehicule of vehicules" [value]="vehicule.id">
+                                        {{ vehicule.designation }}
+                                    </mat-option>
+                                </mat-select>
                             </mat-form-field>
                         </div>
                     </div>
@@ -125,8 +137,7 @@
             </mat-dialog-content>
             <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
                 <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
-                <button mat-flat-button color="primary" (click)="sauvegarderAlerte()">{{ isEdit ? 'Modifier' : 'Ajouter'
-                    }}</button>
+                <button mat-flat-button color="primary" (click)="sauvegarderAlerte()">{{ isEdit ? 'Modifier' : 'Ajouter' }}</button>
             </mat-dialog-actions>
         </div>
     </div>
@@ -137,8 +148,7 @@
     <div class="mdc-dialog__container">
         <div class="mat-mdc-dialog-surface mdc-dialog__surface">
             <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Supprimer</h2>
-            <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer l'alerte avec l'ID <span
-                    class="f-w-600">{{ selectedAlerte?.id }}</span>?</div>
+            <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer l'alerte avec l'ID <span class="f-w-600">{{ selectedAlerte?.id }}</span>?</div>
             <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
                 <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
                 <button mat-flat-button color="primary" (click)="confirmerSuppression()">Supprimer</button>

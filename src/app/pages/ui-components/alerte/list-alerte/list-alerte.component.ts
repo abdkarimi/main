@@ -5,9 +5,15 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 interface Alerte {
   id: number;
   description: string;
+  vehicule: number;
   kilometrageAlerte: number;
   dateAlerte: Date;
   statut: string;
+}
+
+interface Vehicule {
+  id: number;
+  designation: string;
 }
 
 @Component({
@@ -23,15 +29,18 @@ export class ListAlerteComponent implements OnInit {
   displayedColumns: string[] = [
     'id',
     'description',
+    'vehicule',
     'kilometrageAlerte',
     'dateAlerte',
     'statut',
     'actions',
   ];
+
   alertes: Alerte[] = [
     {
       id: 1,
       description: 'Changement de pneu',
+      vehicule: 1,
       kilometrageAlerte: 50000,
       dateAlerte: new Date('2023-01-01'),
       statut: 'Activer',
@@ -39,10 +48,16 @@ export class ListAlerteComponent implements OnInit {
     {
       id: 2,
       description: 'Vidange',
+      vehicule: 2,
       kilometrageAlerte: 10000,
       dateAlerte: new Date('2023-05-15'),
       statut: 'Desactiver',
     },
+  ];
+
+  vehicules: Vehicule[] = [
+    { id: 1, designation: 'Peugeot 208' },
+    { id: 2, designation: 'Renault Clio' },
   ];
 
   statuts: string[] = ['Activer', 'Desactiver'];
@@ -53,8 +68,9 @@ export class ListAlerteComponent implements OnInit {
 
   constructor(public dialog: MatDialog, private fb: FormBuilder) {
     this.alerteForm = this.fb.group({
-      id: [''],
+      id: [{ value: '', disabled: true }],
       description: [''],
+      vehicule: [''],
       kilometrageAlerte: [''],
       dateAlerte: [''],
       statut: [''],
@@ -87,10 +103,11 @@ export class ListAlerteComponent implements OnInit {
   }
 
   sauvegarderAlerte(): void {
+    const alerteData = this.alerteForm.getRawValue();
     if (this.isEdit) {
-      Object.assign(this.selectedAlerte, this.alerteForm.value);
+      Object.assign(this.selectedAlerte, alerteData);
     } else {
-      this.alertes.push(this.alerteForm.value);
+      this.alertes.push(alerteData);
     }
     this.dialog.closeAll();
   }
@@ -112,5 +129,10 @@ export class ListAlerteComponent implements OnInit {
   confirmerSuppression(): void {
     this.alertes = this.alertes.filter((a) => a !== this.selectedAlerte);
     this.fermerDialog();
+  }
+
+  getVehiculeName(vehiculeId: number): string {
+    const vehicule = this.vehicules.find((v) => v.id === vehiculeId);
+    return vehicule ? vehicule.designation : '';
   }
 }

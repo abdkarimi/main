@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 interface Accident {
   dateAccident: Date;
   description: string;
+  vehicule: number;
   lieuAccident: string;
   datePV: Date;
   conducteur: number;
@@ -18,19 +19,24 @@ interface Agent {
   prenom: string;
 }
 
+interface Vehicule {
+  id: number;
+  designation: string;
+}
+
 @Component({
   selector: 'app-list-accident',
   templateUrl: './list-accident.component.html',
   styleUrls: ['./list-accident.component.scss'],
 })
 export class ListAccidentComponent implements OnInit {
-  @ViewChild('dialogAjoutModification')
-  dialogAjoutModification: TemplateRef<any>;
+  @ViewChild('dialogAjoutModification') dialogAjoutModification: TemplateRef<any>;
   @ViewChild('dialogSuppression') dialogSuppression: TemplateRef<any>;
 
   displayedColumns: string[] = [
     'dateAccident',
     'description',
+    'vehicule',
     'lieuAccident',
     'datePV',
     'conducteur',
@@ -38,10 +44,12 @@ export class ListAccidentComponent implements OnInit {
     'dossierPhoto',
     'actions',
   ];
+
   accidents: Accident[] = [
     {
       dateAccident: new Date('2023-01-01'),
       description: 'Accident mineur',
+      vehicule: 1,
       lieuAccident: 'Paris',
       datePV: new Date('2023-01-05'),
       conducteur: 1,
@@ -51,6 +59,7 @@ export class ListAccidentComponent implements OnInit {
     {
       dateAccident: new Date('2023-05-15'),
       description: 'Accident majeur',
+      vehicule: 2,
       lieuAccident: 'Lyon',
       datePV: new Date('2023-05-20'),
       conducteur: 2,
@@ -64,6 +73,11 @@ export class ListAccidentComponent implements OnInit {
     { matricule: 2, nom: 'Martin', prenom: 'Marie' },
   ];
 
+  vehicules: Vehicule[] = [
+    { id: 1, designation: 'Peugeot 208' },
+    { id: 2, designation: 'Renault Clio' },
+  ];
+
   selectedAccident: Accident;
   isEdit: boolean = false;
   accidentForm: FormGroup;
@@ -72,6 +86,7 @@ export class ListAccidentComponent implements OnInit {
     this.accidentForm = this.fb.group({
       dateAccident: [''],
       description: [''],
+      vehicule: [''],
       lieuAccident: [''],
       datePV: [''],
       conducteur: [''],
@@ -148,5 +163,10 @@ export class ListAccidentComponent implements OnInit {
   getAgentName(matricule: number): string {
     const agent = this.agents.find((a) => a.matricule === matricule);
     return agent ? `${agent.nom} ${agent.prenom}` : '';
+  }
+
+  getVehiculeName(vehiculeId: number): string {
+    const vehicule = this.vehicules.find((v) => v.id === vehiculeId);
+    return vehicule ? vehicule.designation : '';
   }
 }

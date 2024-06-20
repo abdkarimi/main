@@ -30,18 +30,24 @@
                             <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.numPolice }}</td>
                         </ng-container>
 
+                        <ng-container matColumnDef="compagnie">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Compagnie</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ getCompagnieName(element.compagnie) }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="vehicule">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Véhicule</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ getVehiculeName(element.vehicule) }}</td>
+                        </ng-container>
+
                         <ng-container matColumnDef="dateDebutGarantie">
-                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date Début
-                                Garantie</th>
-                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateDebutGarantie |
-                                date: 'dd/MM/yyyy' }}</td>
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date Début Garantie</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateDebutGarantie | date: 'dd/MM/yyyy' }}</td>
                         </ng-container>
 
                         <ng-container matColumnDef="dateFinGarantie">
-                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date Fin
-                                Garantie</th>
-                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateFinGarantie | date:
-                                'dd/MM/yyyy' }}</td>
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date Fin Garantie</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateFinGarantie | date: 'dd/MM/yyyy' }}</td>
                         </ng-container>
 
                         <ng-container matColumnDef="attestation">
@@ -66,8 +72,7 @@
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                     </table>
-                    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
-                        aria-label="Sélectionner la page des assurances"></mat-paginator>
+                    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Sélectionner la page des assurances"></mat-paginator>
                 </div>
             </div>
         </div>
@@ -78,15 +83,14 @@
 <ng-template #dialogAjoutModification let-dialogRef>
     <div class="mdc-dialog__container">
         <div class="mat-mdc-dialog-surface mdc-dialog__surface">
-            <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Assurance' :
-                'Ajouter Assurance' }}</h2>
+            <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Assurance' : 'Ajouter Assurance' }}</h2>
             <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
                 <form [formGroup]="assuranceForm">
                     <div class="row">
                         <div class="col">
                             <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                                 <mat-label>Id</mat-label>
-                                <input matInput formControlName="id" type="number" />
+                                <input matInput formControlName="id" type="number" disabled />
                             </mat-form-field>
                         </div>
                         <div class="col">
@@ -99,9 +103,30 @@
                     <div class="row">
                         <div class="col">
                             <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Compagnie</mat-label>
+                                <mat-select formControlName="compagnie">
+                                    <mat-option *ngFor="let compagnie of compagnies" [value]="compagnie.id">
+                                        {{ compagnie.nom }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Véhicule</mat-label>
+                                <mat-select formControlName="vehicule">
+                                    <mat-option *ngFor="let vehicule of vehicules" [value]="vehicule.id">
+                                        {{ vehicule.designation }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                                 <mat-label>Date Début Garantie</mat-label>
-                                <input matInput formControlName="dateDebutGarantie"
-                                    [matDatepicker]="pickerDebutGarantie" />
+                                <input matInput formControlName="dateDebutGarantie" [matDatepicker]="pickerDebutGarantie" />
                                 <mat-datepicker-toggle matSuffix [for]="pickerDebutGarantie"></mat-datepicker-toggle>
                                 <mat-datepicker #pickerDebutGarantie></mat-datepicker>
                             </mat-form-field>
@@ -125,8 +150,7 @@
             </mat-dialog-content>
             <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
                 <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
-                <button mat-flat-button color="primary" (click)="sauvegarderAssurance()">{{ isEdit ? 'Modifier' :
-                    'Ajouter' }}</button>
+                <button mat-flat-button color="primary" (click)="sauvegarderAssurance()">{{ isEdit ? 'Modifier' : 'Ajouter' }}</button>
             </mat-dialog-actions>
         </div>
     </div>
@@ -137,8 +161,7 @@
     <div class="mdc-dialog__container">
         <div class="mat-mdc-dialog-surface mdc-dialog__surface">
             <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Supprimer</h2>
-            <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{
-                    selectedAssurance?.numPolice }}</span>?</div>
+            <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{ selectedAssurance?.numPolice }}</span>?</div>
             <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
                 <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
                 <button mat-flat-button color="primary" (click)="confirmerSuppression()">Supprimer</button>
