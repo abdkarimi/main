@@ -1,18 +1,10 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup } from '@angular/forms';
-
-interface Structure {
-  id: string;
-  designation: string;
-  structureParent: string;
-  responsable: string;
-}
-
-interface Agent {
-  id: string;
-  nom: string;
-}
+import { Structure } from 'src/app/models/Structure';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { StructureService } from 'src/app/services/Structure/structure.service';
 
 @Component({
   selector: 'app-list-structure',
@@ -20,65 +12,54 @@ interface Agent {
   styleUrls: ['./list-structure.component.scss'],
 })
 export class ListStructureComponent implements OnInit {
-  @ViewChild('dialogAjoutModification')
-  dialogAjoutModification: TemplateRef<any>;
+  @ViewChild('dialogAjoutModification') dialogAjoutModification: TemplateRef<any>;
   @ViewChild('dialogSuppression') dialogSuppression: TemplateRef<any>;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  displayedColumns: string[] = [
-    'id',
-    'designation',
-    'structureParent',
-    'responsable',
-    'actions',
-  ];
-  structures: Structure[] = [
-    {
-      id: '1',
-      designation: 'Direction Générale',
-      structureParent: '',
-      responsable: '1',
-    },
-    {
-      id: '2',
-      designation: 'Service Informatique',
-      structureParent: '1',
-      responsable: '2',
-    },
-  ];
-
-  agents: Agent[] = [
-    {
-      id: '1',
-      nom: 'Jean Dupont',
-    },
-    {
-      id: '2',
-      nom: 'Marie Durand',
-    },
-  ];
+  displayedColumns: string[] = ['idStructure', 'nomStructure', 'structureParent', 'responsableStructure', 'actions'];
+  structures: MatTableDataSource<Structure> = new MatTableDataSource();
 
   selectedStructure: Structure;
   isEdit: boolean = false;
   structureForm: FormGroup;
 
-  constructor(public dialog: MatDialog, private fb: FormBuilder) {
+  constructor(
+    public dialog: MatDialog,
+    private fb: FormBuilder,
+    private structureService: StructureService
+  ) {
     this.structureForm = this.fb.group({
-      id: [''],
-      designation: [''],
+      idStructure: [''],
+      nomStructure: [''],
       structureParent: [''],
-      responsable: [''],
+      responsableStructure: [''],
     });
   }
 
-  ngOnInit(): void {}
-
-  getStructureParentName(id: string): string {
-    const structure = this.structures.find((s) => s.id === id);
-    return structure ? structure.designation : '';
+  ngOnInit(): void {
+    this.loadStructures();
+    this.structures.paginator = this.paginator;
   }
 
-  getAgentName(id: string): string {
-    const agent = this.agents.find((a) => a.id === id);
+  loadStructures() {
+    this.structureService.obtenirToutesStructures().subscribe((data: Structure[]) => {
+      this.structures.data = data;
+      this.structures.paginator = this.paginator;
+    });
+  }
+
+  getStructureParentName(id: number): string {
+    const structure = this.structures.data.find((s) => s.idStructure === id);
+    return structure ? structure.nomStructure : '';
+  }
+
+  getAgentName(id: number): string {
+    // Simulated agent name retrieval
+    const agents = [
+      { id: 1, nom: 'Jean Dupont' },
+      { id: 2, nom: 'Marie Durand' },
+    ];
+    const agent = agents.find((a) => a.id === id);
     return agent ? agent.nom : '';
   }
 
@@ -107,11 +88,18 @@ export class ListStructureComponent implements OnInit {
 
   sauvegarderStructure(): void {
     if (this.isEdit) {
-      Object.assign(this.selectedStructure, this.structureForm.value);
+      this.structureService
+        .mettreAJourStructure(this.selectedStructure.idStructure, this.structureForm.value)
+        .subscribe(() => {
+          this.loadStructures();
+          this.dialog.closeAll();
+        });
     } else {
-      this.structures.push(this.structureForm.value);
+      this.structureService.creerStructure(this.structureForm.value).subscribe(() => {
+        this.loadStructures();
+        this.dialog.closeAll();
+      });
     }
-    this.dialog.closeAll();
   }
 
   ouvrirDialogSuppression(structure: Structure): void {
@@ -129,9 +117,18 @@ export class ListStructureComponent implements OnInit {
   }
 
   confirmerSuppression(): void {
-    this.structures = this.structures.filter(
-      (s) => s !== this.selectedStructure
-    );
-    this.fermerDialog();
+    this.structureService.supprimerStructure(this.selectedStructure.idStructure).subscribe(() => {
+      this.loadStructures();
+      this.fermerDialog();
+    });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.structures.filter = filterValue.trim().toLowerCase();
+
+    if (this.structures.paginator) {
+      this.structures.paginator.firstPage();
+    }
   }
 }

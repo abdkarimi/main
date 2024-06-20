@@ -12,8 +12,14 @@ export class TinterventionService {
 
   constructor(private http: HttpClient) {}
 
-  createTypeIntervention(typeIntervention: TIntervention): Observable<TIntervention> {
-    return this.http.post<TIntervention>(this.apiUrl, typeIntervention, this.httpOptions);
+  createTypeIntervention(
+    typeIntervention: TIntervention
+  ): Observable<TIntervention> {
+    return this.http.post<TIntervention>(
+      this.apiUrl,
+      typeIntervention,
+      this.httpOptions
+    );
   }
 
   getTypeInterventionById(id: number): Observable<TIntervention> {
@@ -24,8 +30,15 @@ export class TinterventionService {
     return this.http.get<TIntervention[]>(this.apiUrl);
   }
 
-  updateTypeIntervention(id: number, typeIntervention: TIntervention): Observable<TIntervention> {
-    return this.http.put<TIntervention>(`${this.apiUrl}/${id}`, typeIntervention, this.httpOptions);
+  updateTypeIntervention(
+    id: number,
+    typeIntervention: TIntervention
+  ): Observable<TIntervention> {
+    return this.http.put<TIntervention>(
+      `${this.apiUrl}/${id}`,
+      typeIntervention,
+      this.httpOptions
+    );
   }
 
   deleteTypeIntervention(id: number): Observable<void> {

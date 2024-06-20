@@ -9,7 +9,7 @@
     <div class="row">
       <div class="col-lg-8">
         <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
-          <input matInput placeholder="Recherche" />
+          <input matInput placeholder="Recherche" (input)="applyFilter($event)" />
           <mat-icon matSuffix role="img">
             <i-tabler name="search" class="icon-20"></i-tabler>
           </mat-icon>
@@ -20,25 +20,24 @@
       <div class="col-lg-12">
         <div class="table-responsive">
           <table mat-table [dataSource]="structures" class="w-100">
-            <ng-container matColumnDef="id">
+            <ng-container matColumnDef="idStructure">
               <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Id</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.id }}</td>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.idStructure }}</td>
             </ng-container>
 
-            <ng-container matColumnDef="designation">
+            <ng-container matColumnDef="nomStructure">
               <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Désignation</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.designation }}</td>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.nomStructure }}</td>
             </ng-container>
 
             <ng-container matColumnDef="structureParent">
               <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Structure parent</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{
-                getStructureParentName(element.structureParent) }}</td>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ getStructureParentName(element.structureParent) }}</td>
             </ng-container>
 
-            <ng-container matColumnDef="responsable">
+            <ng-container matColumnDef="responsableStructure">
               <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Responsable</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ getAgentName(element.responsable) }}</td>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ getAgentName(element.responsableStructure) }}</td>
             </ng-container>
 
             <ng-container matColumnDef="actions">
@@ -68,29 +67,24 @@
 <ng-template #dialogAjoutModification let-dialogRef>
   <div class="mdc-dialog__container">
     <div class="mat-mdc-dialog-surface mdc-dialog__surface">
-      <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Structure' : 'Ajouter
-        Structure' }}</h2>
+      <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Structure' : 'Ajouter Structure' }}</h2>
       <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
         <form [formGroup]="structureForm">
           <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-            <mat-label>Id</mat-label>
-            <input matInput formControlName="id" />
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
             <mat-label>Désignation</mat-label>
-            <input matInput formControlName="designation" />
+            <input matInput formControlName="nomStructure" />
           </mat-form-field>
           <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
             <mat-label>Structure parent</mat-label>
             <mat-select formControlName="structureParent">
-              <mat-option *ngFor="let structure of structures" [value]="structure.id">
-                {{ structure.designation }}
+              <mat-option *ngFor="let structure of structures.data" [value]="structure.idStructure">
+                {{ structure.nomStructure }}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
             <mat-label>Responsable</mat-label>
-            <mat-select formControlName="responsable">
+            <mat-select formControlName="responsableStructure">
               <mat-option *ngFor="let agent of agents" [value]="agent.id">
                 {{ agent.nom }}
               </mat-option>
@@ -100,8 +94,7 @@
       </mat-dialog-content>
       <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
         <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
-        <button mat-flat-button color="primary" (click)="sauvegarderStructure()">{{ isEdit ? 'Modifier' : 'Ajouter'
-          }}</button>
+        <button mat-flat-button color="primary" (click)="sauvegarderStructure()">{{ isEdit ? 'Modifier' : 'Ajouter' }}</button>
       </mat-dialog-actions>
     </div>
   </div>
@@ -112,8 +105,7 @@
   <div class="mdc-dialog__container">
     <div class="mat-mdc-dialog-surface mdc-dialog__surface">
       <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Supprimer</h2>
-      <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{
-          selectedStructure?.designation }}</span>?</div>
+      <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{ selectedStructure?.nomStructure }}</span>?</div>
       <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
         <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
         <button mat-flat-button color="primary" (click)="confirmerSuppression()">Supprimer</button>

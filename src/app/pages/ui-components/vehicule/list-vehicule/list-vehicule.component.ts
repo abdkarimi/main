@@ -168,8 +168,8 @@ export class ListVehiculeComponent implements OnInit {
     this.dialog.open(this.dialogAjoutModification, {
       width: '800px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -180,8 +180,8 @@ export class ListVehiculeComponent implements OnInit {
     this.dialog.open(this.dialogAjoutModification, {
       width: '800px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -190,8 +190,8 @@ export class ListVehiculeComponent implements OnInit {
     this.dialog.open(this.dialogConsultation, {
       width: '800px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -221,8 +221,8 @@ export class ListVehiculeComponent implements OnInit {
     this.dialog.open(this.dialogSuppression, {
       width: '400px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 

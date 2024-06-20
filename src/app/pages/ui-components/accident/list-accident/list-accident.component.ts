@@ -30,7 +30,8 @@ interface Vehicule {
   styleUrls: ['./list-accident.component.scss'],
 })
 export class ListAccidentComponent implements OnInit {
-  @ViewChild('dialogAjoutModification') dialogAjoutModification: TemplateRef<any>;
+  @ViewChild('dialogAjoutModification')
+  dialogAjoutModification: TemplateRef<any>;
   @ViewChild('dialogSuppression') dialogSuppression: TemplateRef<any>;
 
   displayedColumns: string[] = [
@@ -103,8 +104,8 @@ export class ListAccidentComponent implements OnInit {
     this.dialog.open(this.dialogAjoutModification, {
       width: '800px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -115,8 +116,8 @@ export class ListAccidentComponent implements OnInit {
     this.dialog.open(this.dialogAjoutModification, {
       width: '800px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -146,8 +147,8 @@ export class ListAccidentComponent implements OnInit {
     this.dialog.open(this.dialogSuppression, {
       width: '400px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
