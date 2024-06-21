@@ -1,12 +1,14 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Utilisateur } from 'src/app/models/Utilisateur';
 import { Structure } from 'src/app/models/Structure';
 import { Role } from 'src/app/models/Role';
 import { AgentService } from 'src/app/services/Agent/agent.service';
 import { StructureService } from 'src/app/services/Structure/structure.service';
 import { RoleService } from 'src/app/services/role/role.service';
+import { ImageService } from 'src/app/services/image/image.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-list-agent',
@@ -14,7 +16,8 @@ import { RoleService } from 'src/app/services/role/role.service';
   styleUrls: ['./list-agent.component.scss'],
 })
 export class ListAgentComponent implements OnInit {
-  @ViewChild('dialogAjoutModification') dialogAjoutModification: TemplateRef<any>;
+  @ViewChild('dialogAjoutModification')
+  dialogAjoutModification: TemplateRef<any>;
   @ViewChild('dialogSuppression') dialogSuppression: TemplateRef<any>;
 
   displayedColumns: string[] = [
@@ -37,28 +40,45 @@ export class ListAgentComponent implements OnInit {
   isEdit: boolean = false;
   agentForm: FormGroup;
   imgURL: any;
+  agentImages: string[] = [];
 
   constructor(
     public dialog: MatDialog,
     private fb: FormBuilder,
     private agentService: AgentService,
     private roleService: RoleService,
-    private structureService: StructureService
+    private structureService: StructureService,
+    private formBuilder: FormBuilder,
+    private imageService: ImageService,
+    private toastr: ToastrService
   ) {
     this.agentForm = this.fb.group({
-      matricule: [''],
-      nom: [''],
-      prenom: [''],
-      username: [''],
-      email: [''],
-      password: [''],
-      tel: [''],
-      adresse: [''],
-      dateDeNaissance: [''],
-      dateDeRecrutement: [''],
-      structure: [''],
-      idRole: [''],
-      photo: ['']
+      id: 0,
+      matricule: ['', Validators.required],
+      nom: ['', [Validators.required, Validators.pattern('^[A-Za-z]+$')]],
+      prenom: ['', [Validators.required, Validators.pattern('^[A-Za-z]+$')]],
+      username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(
+            '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$'
+          ),
+        ],
+      ],
+      tel: ['', [Validators.required, Validators.pattern('^0[567][0-9]{8}$')]],
+      adresse: ['', Validators.required],
+      dateDeNaissance: ['', Validators.required],
+      dateDeRecrutement: ['', Validators.required],
+      structure: this.formBuilder.group({
+        idStructure: ['', Validators.required],
+      }),
+      idRole: this.formBuilder.group({
+        id: ['', Validators.required],
+      }),
+      photo: [''],
     });
   }
 
@@ -71,13 +91,18 @@ export class ListAgentComponent implements OnInit {
   loadAgents(): void {
     this.agentService.getAllUtilisateurs().subscribe((data: Utilisateur[]) => {
       this.agents = data;
+      this.agents.forEach((agent) => {
+        this.fetchAgentsImage(agent); // Pass the entire article object
+      });
     });
   }
 
   loadStructures(): void {
-    this.structureService.obtenirToutesStructures().subscribe((data: Structure[]) => {
-      this.structures = data;
-    });
+    this.structureService
+      .obtenirToutesStructures()
+      .subscribe((data: Structure[]) => {
+        this.structures = data;
+      });
   }
 
   loadRoles(): void {
@@ -100,7 +125,25 @@ export class ListAgentComponent implements OnInit {
   ouvrirDialogModification(agent: Utilisateur): void {
     this.isEdit = true;
     this.selectedAgent = agent;
-    this.agentForm.patchValue(agent);
+    this.agentForm.patchValue({
+      id: agent.id,
+      matricule: agent.matricule,
+      nom: agent.nom,
+      prenom: agent.prenom,
+      username: agent.username,
+      email: agent.email,
+      tel: agent.tel,
+      adresse: agent.adresse,
+      dateDeNaissance: agent.dateDeNaissance,
+      dateDeRecrutement: agent.dateDeRecrutement,
+      structure: {
+        idStructure: agent.structure.idStructure,
+      },
+      idRole: {
+        id: agent.idRole.id,
+      },
+    });
+    this.fetchAgentImage(agent);
     this.dialog.open(this.dialogAjoutModification, {
       width: '800px',
       autoFocus: false,
@@ -109,30 +152,51 @@ export class ListAgentComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: Event): void {
-    const fileInput = event.target as HTMLInputElement;
-    if (fileInput.files && fileInput.files.length > 0) {
-      const file = fileInput.files[0];
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
       const reader = new FileReader();
+      reader.readAsDataURL(file);
       reader.onload = () => {
         this.imgURL = reader.result;
-        this.agentForm.patchValue({ photo: reader.result as string });
       };
-      reader.readAsDataURL(file);
     }
   }
 
   sauvegarderAgent(fileInput: any): void {
     const file: File = fileInput.files[0];
-
+    if (this.agentForm.invalid) {
+      this.toastr.warning(
+        'Veuillez corriger les erreurs du formulaire avant de soumettre.',
+        'Validation échouée'
+      );
+      return;
+    }
     if (this.isEdit) {
-      this.agentService.updateUtilisateur(this.agentForm.value, file).subscribe(() => {
-        this.loadAgents();
-      });
+      console.log(file, this.agentForm.value);
+      this.agentService.updateUtilisateur(this.agentForm.value, file).subscribe(
+        () => {
+          this.loadAgents();
+          this.fermerDialog();
+          this.agentForm.reset();
+          this.toastr.success('Agent modifié avec succès.', 'Succès');
+        },
+        (error) => {
+          this.handleHttpError(error);
+        }
+      );
     } else {
-      this.agentService.saveUtilisateur(this.agentForm.value, file).subscribe(() => {
-        this.loadAgents();
-      });
+      this.agentService.saveUtilisateur(this.agentForm.value, file).subscribe(
+        () => {
+          this.loadAgents();
+          this.fermerDialog();
+          this.agentForm.reset();
+          this.toastr.success('Agent ajouté avec succès.', 'Succès');
+        },
+        (error) => {
+          this.handleHttpError(error);
+        }
+      );
     }
     this.dialog.closeAll();
   }
@@ -152,14 +216,56 @@ export class ListAgentComponent implements OnInit {
   }
 
   confirmerSuppression(): void {
-    this.agentService.deleteUtilisateur(this.selectedAgent.id).subscribe(() => {
-      this.agents = this.agents.filter(a => a !== this.selectedAgent);
-      this.fermerDialog();
-    });
+    this.agentService.deleteUtilisateur(this.selectedAgent.id).subscribe(
+      () => {
+        this.agents = this.agents.filter((a) => a !== this.selectedAgent);
+        this.fermerDialog();
+        this.toastr.success('Agent supprimé avec succès.', 'Succès');
+      },
+      (error) => {
+        this.handleHttpError(error);
+      }
+    );
   }
-
+  private handleHttpError(error: any): void {
+    if (error.status === 409) {
+      this.toastr.warning(
+        'Un agent avec les mêmes attributs existe déjà.',
+        'Erreur de conflit'
+      );
+    } else if (error.status === 500) {
+      this.toastr.error(
+        "Erreur lors de l'enregistrement de l'agent.",
+        'Erreur interne du serveur'
+      );
+    } else {
+      this.toastr.error("Une erreur inattendue s'est produite.", 'Erreur');
+    }
+  }
   getStructureName(structureId: number): string {
-    const structure = this.structures.find(s => s.idStructure === structureId);
+    const structure = this.structures.find(
+      (s) => s.idStructure === structureId
+    );
     return structure ? structure.nomStructure : '';
+  }
+  fetchAgentsImage(agent: Utilisateur): void {
+    this.imageService.fetchImage(agent.photo).subscribe(
+      (imageUrl) => {
+        this.agentImages[agent.id] = imageUrl;
+      },
+      (error) => {
+        console.error('Error fetching article image:', error);
+      }
+    );
+  }
+  fetchAgentImage(agent: Utilisateur): void {
+    this.imageService.fetchImage(agent.photo).subscribe(
+      (imageUrl) => {
+        this.imgURL = imageUrl; // Set the image URL for preview
+      },
+      (error) => {
+        console.error('Error fetching article image:', error);
+      }
+    );
   }
 }
