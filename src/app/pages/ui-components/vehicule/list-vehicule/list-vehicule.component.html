@@ -184,8 +184,8 @@
                             <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                                 <mat-label>Modèle</mat-label>
                                 <mat-select formControlName="modele">
-                                    <mat-option *ngFor="let modele of modeles" [value]="modele.id">
-                                        {{ modele.designation }}
+                                    <mat-option *ngFor="let modele of modeles" [value]="modele.idModele">
+                                        {{ modele.libelleModele }}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
@@ -194,8 +194,9 @@
                             <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                                 <mat-label>Carburant</mat-label>
                                 <mat-select formControlName="carburant">
-                                    <mat-option *ngFor="let carburant of carburants" [value]="carburant.id">
-                                        {{ carburant.designation }}
+                                    <mat-option *ngFor="let carburant of carburants"
+                                        [value]="carburant.idTypeCarburant">
+                                        {{ carburant.libelleTypeCarburant }}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
@@ -206,8 +207,8 @@
                             <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                                 <mat-label>Catégorie</mat-label>
                                 <mat-select formControlName="categorie">
-                                    <mat-option *ngFor="let categorie of categories" [value]="categorie.id">
-                                        {{ categorie.designation }}
+                                    <mat-option *ngFor="let categorie of categories" [value]="categorie.idTypeVehicule">
+                                        {{ categorie.libelleTypeVehicule }}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
@@ -216,8 +217,9 @@
                             <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                                 <mat-label>Énumération</mat-label>
                                 <mat-select formControlName="enumeration">
-                                    <mat-option *ngFor="let enumeration of enumerations" [value]="enumeration.id">
-                                        {{ enumeration.designation }}
+                                    <mat-option *ngFor="let enumeration of enumerations"
+                                        [value]="enumeration.idEnumeration">
+                                        {{ enumeration.designationEnumeration }}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
@@ -228,8 +230,8 @@
                             <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                                 <mat-label>Statut</mat-label>
                                 <mat-select formControlName="statut">
-                                    <mat-option *ngFor="let statut of statuts" [value]="statut.id">
-                                        {{ statut.designation }}
+                                    <mat-option *ngFor="let statut of statuts" [value]="statut.idStatut">
+                                        {{ statut.designationStatut }}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
@@ -239,8 +241,8 @@
                                 <mat-label>Concessionnaire</mat-label>
                                 <mat-select formControlName="concessionnaire">
                                     <mat-option *ngFor="let concessionnaire of concessionnaires"
-                                        [value]="concessionnaire.id">
-                                        {{ concessionnaire.designation }}
+                                        [value]="concessionnaire.idConcessionnaire">
+                                        {{ concessionnaire.nomConcessionnaire }}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>

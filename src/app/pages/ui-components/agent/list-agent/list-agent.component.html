@@ -93,7 +93,8 @@
   <form [formGroup]="agentForm" enctype="multipart/form-data" (ngSubmit)="sauvegarderAgent(fileInput)">
     <div class="mdc-dialog__container">
       <div class="mat-mdc-dialog-surface mdc-dialog__surface">
-        <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Agent' : 'Ajouter Agent' }}</h2>
+        <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Agent' : 'Ajouter
+          Agent' }}</h2>
         <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
           <div class="row">
             <div class="col">
@@ -114,8 +115,6 @@
                 </mat-error>
               </mat-form-field>
             </div>
-          </div>
-          <div class="row">
             <div class="col">
               <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                 <mat-label>Prénom</mat-label>
@@ -125,6 +124,12 @@
                 </mat-error>
               </mat-form-field>
             </div>
+          </div>
+          <div class="row">
+
+
+          </div>
+          <div class="row">
             <div class="col">
               <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                 <mat-label>Nom d'utilisateur</mat-label>
@@ -134,8 +139,6 @@
                 </mat-error>
               </mat-form-field>
             </div>
-          </div>
-          <div class="row">
             <div class="col">
               <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                 <mat-label>Email</mat-label>
@@ -150,7 +153,8 @@
                 <mat-label>Mot de passe</mat-label>
                 <input matInput formControlName="password" type="password" />
                 <mat-error *ngIf="agentForm.get('password').invalid && agentForm.get('password').touched">
-                  Le mot de passe est requis et doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre.
+                  Le mot de passe est requis et doit contenir au moins 8 caractères, une majuscule, une minuscule et un
+                  chiffre.
                 </mat-error>
               </mat-form-field>
             </div>
@@ -174,8 +178,6 @@
                 Adresse est requise.
               </mat-error>
             </div>
-          </div>
-          <div class="row">
             <div class="col">
               <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                 <mat-label>Date de Naissance</mat-label>
@@ -187,19 +189,21 @@
                 </mat-error>
               </mat-form-field>
             </div>
+          </div>
+          <div class="row">
+
             <div class="col">
               <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                 <mat-label>Date de Recrutement</mat-label>
                 <input matInput formControlName="dateDeRecrutement" [matDatepicker]="pickerRecrutement" />
                 <mat-datepicker-toggle matSuffix [for]="pickerRecrutement"></mat-datepicker-toggle>
                 <mat-datepicker #pickerRecrutement></mat-datepicker>
-                <mat-error *ngIf="agentForm.get('dateDeRecrutement').invalid && agentForm.get('dateDeRecrutement').touched">
+                <mat-error
+                  *ngIf="agentForm.get('dateDeRecrutement').invalid && agentForm.get('dateDeRecrutement').touched">
                   Date de recrutement est requise.
                 </mat-error>
               </mat-form-field>
             </div>
-          </div>
-          <div class="row">
             <div class="col">
               <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                 <mat-label>Affectation</mat-label>
@@ -208,7 +212,8 @@
                     {{ structure.nomStructure }}
                   </mat-option>
                 </mat-select>
-                <mat-error *ngIf="agentForm.get('structure.idStructure').invalid && agentForm.get('structure.idStructure').touched">
+                <mat-error
+                  *ngIf="agentForm.get('structure.idStructure').invalid && agentForm.get('structure.idStructure').touched">
                   Affectation est requise.
                 </mat-error>
               </mat-form-field>

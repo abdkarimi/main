@@ -1,52 +1,23 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
-interface Vehicule {
-  photo: string;
-  matricule: string;
-  dateMiseCirculation: Date;
-  puissanceFiscale: string;
-  nbrePlace: string;
-  couleur: string;
-  kilometrage: string;
-  modele: number;
-  carburant: number;
-  categorie: number;
-  enumeration: number;
-  statut: number;
-  concessionnaire: number;
-}
+import { Vehicule } from 'src/app/models/Vehicule';
+import { Modele } from 'src/app/models/Modele';
+import { TCarburant } from 'src/app/models/TCarburant';
+import { CatVehicule } from 'src/app/models/CatVehicule';
+import { Enumeration } from 'src/app/models/Enumeration';
+import { Statut } from 'src/app/models/Statut';
+import { Concessionnaire } from 'src/app/models/Concessionnaire';
 
-interface Modele {
-  id: number;
-  designation: string;
-}
-
-interface Carburant {
-  id: number;
-  designation: string;
-}
-
-interface Categorie {
-  id: number;
-  designation: string;
-}
-
-interface Enumeration {
-  id: number;
-  designation: string;
-}
-
-interface Statut {
-  id: number;
-  designation: string;
-}
-
-interface Concessionnaire {
-  id: number;
-  designation: string;
-}
+import { ModeleService } from 'src/app/services/Modele/modele.service';
+import { VehiculeService } from 'src/app/services/Vehicule/vehicule.service';
+import { TcarburantService } from 'src/app/services/TCarburant/tcarburant.service';
+import { CatvehiculeService } from 'src/app/services/CatVehicule/catvehicule.service';
+import { EnumerationService } from 'src/app/services/enumeration/enumeration.service';
+import { StatutService } from 'src/app/services/statut/statut.service';
+import { ConcessionnaireService } from 'src/app/services/Concessionnaire/concessionnaire.service';
 
 @Component({
   selector: 'app-list-vehicule',
@@ -54,8 +25,7 @@ interface Concessionnaire {
   styleUrls: ['./list-vehicule.component.scss'],
 })
 export class ListVehiculeComponent implements OnInit {
-  @ViewChild('dialogAjoutModification')
-  dialogAjoutModification: TemplateRef<any>;
+  @ViewChild('dialogAjoutModification') dialogAjoutModification: TemplateRef<any>;
   @ViewChild('dialogSuppression') dialogSuppression: TemplateRef<any>;
   @ViewChild('dialogConsultation') dialogConsultation: TemplateRef<any>;
 
@@ -75,92 +45,61 @@ export class ListVehiculeComponent implements OnInit {
     'concessionnaire',
     'actions',
   ];
-  vehicules: Vehicule[] = [
-    {
-      photo: 'https://via.placeholder.com/150',
-      matricule: 'ABC-123',
-      dateMiseCirculation: new Date('2020-01-01'),
-      puissanceFiscale: '7CV',
-      nbrePlace: '5',
-      couleur: 'Rouge',
-      kilometrage: '50000',
-      modele: 1,
-      carburant: 1,
-      categorie: 1,
-      enumeration: 1,
-      statut: 1,
-      concessionnaire: 1,
-    },
-    {
-      photo: 'https://via.placeholder.com/150',
-      matricule: 'XYZ-789',
-      dateMiseCirculation: new Date('2018-05-15'),
-      puissanceFiscale: '5CV',
-      nbrePlace: '4',
-      couleur: 'Bleu',
-      kilometrage: '30000',
-      modele: 2,
-      carburant: 2,
-      categorie: 2,
-      enumeration: 2,
-      statut: 2,
-      concessionnaire: 2,
-    },
-  ];
 
-  modeles: Modele[] = [
-    { id: 1, designation: 'Modèle 1' },
-    { id: 2, designation: 'Modèle 2' },
-  ];
-
-  carburants: Carburant[] = [
-    { id: 1, designation: 'Essence' },
-    { id: 2, designation: 'Diesel' },
-  ];
-
-  categories: Categorie[] = [
-    { id: 1, designation: 'Catégorie 1' },
-    { id: 2, designation: 'Catégorie 2' },
-  ];
-
-  enumerations: Enumeration[] = [
-    { id: 1, designation: 'Énumération 1' },
-    { id: 2, designation: 'Énumération 2' },
-  ];
-
-  statuts: Statut[] = [
-    { id: 1, designation: 'Statut 1' },
-    { id: 2, designation: 'Statut 2' },
-  ];
-
-  concessionnaires: Concessionnaire[] = [
-    { id: 1, designation: 'Concessionnaire 1' },
-    { id: 2, designation: 'Concessionnaire 2' },
-  ];
+  vehicules: Vehicule[] = [];
+  modeles: Modele[] = [];
+  carburants: TCarburant[] = [];
+  categories: CatVehicule[] = [];
+  enumerations: Enumeration[] = [];
+  statuts: Statut[] = [];
+  concessionnaires: Concessionnaire[] = [];
 
   selectedVehicule: Vehicule;
   isEdit: boolean = false;
   vehiculeForm: FormGroup;
 
-  constructor(public dialog: MatDialog, private fb: FormBuilder) {
+  constructor(
+    private vehiculeService: VehiculeService,
+    private modeleService: ModeleService,
+    private tcarburantService: TcarburantService,
+    private catvehiculeService: CatvehiculeService,
+    private enumerationService: EnumerationService,
+    private statutService: StatutService,
+    private concessionnaireService: ConcessionnaireService,
+    private toastr: ToastrService,
+    public dialog: MatDialog,
+    private fb: FormBuilder
+  ) {
     this.vehiculeForm = this.fb.group({
       photo: [''],
-      matricule: [''],
-      dateMiseCirculation: [''],
-      puissanceFiscale: [''],
-      nbrePlace: [''],
-      couleur: [''],
-      kilometrage: [''],
-      modele: [''],
-      carburant: [''],
-      categorie: [''],
-      enumeration: [''],
-      statut: [''],
-      concessionnaire: [''],
+      matricule: ['', Validators.required],
+      dateMiseCirculation: ['', Validators.required],
+      puissanceFiscale: ['', Validators.required],
+      nbrePlace: ['', Validators.required],
+      couleur: ['', Validators.required],
+      kilometrage: ['', Validators.required],
+      modele: ['', Validators.required],
+      carburant: ['', Validators.required],
+      categorie: ['', Validators.required],
+      enumeration: ['', Validators.required],
+      statut: ['', Validators.required],
+      concessionnaire: ['', Validators.required],
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+  loadData(): void {
+    this.vehiculeService.getAllVehicules().subscribe((data) => (this.vehicules = data));
+    this.modeleService.getAllModeles().subscribe((data) => (this.modeles = data));
+    this.tcarburantService.getAllTypeCarburants().subscribe((data) => (this.carburants = data));
+    this.catvehiculeService.getAllTypeVehicules().subscribe((data) => (this.categories = data));
+    this.enumerationService.getAllEnumerations().subscribe((data) => (this.enumerations = data));
+    this.statutService.getAllStatuts().subscribe((data) => (this.statuts = data));
+    this.concessionnaireService.getAllConcessionnaires().subscribe((data) => (this.concessionnaires = data));
+  }
 
   ouvrirDialogAjout(): void {
     this.isEdit = false;
@@ -168,8 +107,6 @@ export class ListVehiculeComponent implements OnInit {
     this.dialog.open(this.dialogAjoutModification, {
       width: '800px',
       autoFocus: false,
-      enterAnimationDuration: '100ms',
-      exitAnimationDuration: '100ms',
     });
   }
 
@@ -180,8 +117,6 @@ export class ListVehiculeComponent implements OnInit {
     this.dialog.open(this.dialogAjoutModification, {
       width: '800px',
       autoFocus: false,
-      enterAnimationDuration: '100ms',
-      exitAnimationDuration: '100ms',
     });
   }
 
@@ -190,8 +125,6 @@ export class ListVehiculeComponent implements OnInit {
     this.dialog.open(this.dialogConsultation, {
       width: '800px',
       autoFocus: false,
-      enterAnimationDuration: '100ms',
-      exitAnimationDuration: '100ms',
     });
   }
 
@@ -209,11 +142,35 @@ export class ListVehiculeComponent implements OnInit {
 
   sauvegarderVehicule(): void {
     if (this.isEdit) {
-      Object.assign(this.selectedVehicule, this.vehiculeForm.value);
+      this.vehiculeService.updateVehicule(this.selectedVehicule.idVehicule, this.vehiculeForm.value, this.getFile() || undefined).subscribe(
+        () => {
+          this.toastr.success('Véhicule mis à jour avec succès');
+          this.loadData();
+          this.dialog.closeAll();
+        },
+        (error) => {
+          this.toastr.error('Erreur lors de la mise à jour du véhicule');
+          console.error(error);
+        }
+      );
     } else {
-      this.vehicules.push(this.vehiculeForm.value);
+      const file = this.getFile();
+      if (file) {
+        this.vehiculeService.saveVehicule(this.vehiculeForm.value, file).subscribe(
+          () => {
+            this.toastr.success('Véhicule ajouté avec succès');
+            this.loadData();
+            this.dialog.closeAll();
+          },
+          (error) => {
+            this.toastr.error('Erreur lors de l\'ajout du véhicule');
+            console.error(error);
+          }
+        );
+      } else {
+        this.toastr.error('Le fichier de photo est requis');
+      }
     }
-    this.dialog.closeAll();
   }
 
   ouvrirDialogSuppression(vehicule: Vehicule): void {
@@ -221,8 +178,6 @@ export class ListVehiculeComponent implements OnInit {
     this.dialog.open(this.dialogSuppression, {
       width: '400px',
       autoFocus: false,
-      enterAnimationDuration: '100ms',
-      exitAnimationDuration: '100ms',
     });
   }
 
@@ -231,37 +186,51 @@ export class ListVehiculeComponent implements OnInit {
   }
 
   confirmerSuppression(): void {
-    this.vehicules = this.vehicules.filter((v) => v !== this.selectedVehicule);
-    this.fermerDialog();
+    this.vehiculeService.deleteVehicule(this.selectedVehicule.idVehicule).subscribe(
+      () => {
+        this.toastr.success('Véhicule supprimé avec succès');
+        this.loadData();
+        this.fermerDialog();
+      },
+      (error) => {
+        this.toastr.error('Erreur lors de la suppression du véhicule');
+        console.error(error);
+      }
+    );
   }
 
   getModeleName(id: number): string {
-    const modele = this.modeles.find((m) => m.id === id);
-    return modele ? modele.designation : '';
+    const modele = this.modeles.find((m) => m.idModele === id);
+    return modele ? modele.libelleModele : '';
   }
 
   getCarburantName(id: number): string {
-    const carburant = this.carburants.find((c) => c.id === id);
-    return carburant ? carburant.designation : '';
+    const carburant = this.carburants.find((c) => c.idTypeCarburant === id);
+    return carburant ? carburant.libelleTypeCarburant : '';
   }
 
   getCategorieName(id: number): string {
-    const categorie = this.categories.find((c) => c.id === id);
-    return categorie ? categorie.designation : '';
+    const categorie = this.categories.find((c) => c.idTypeVehicule === id);
+    return categorie ? categorie.libelleTypeVehicule : '';
   }
 
   getEnumerationName(id: number): string {
-    const enumeration = this.enumerations.find((e) => e.id === id);
-    return enumeration ? enumeration.designation : '';
+    const enumeration = this.enumerations.find((e) => e.idEnumeration === id);
+    return enumeration ? enumeration.designationEnumeration : '';
   }
 
   getStatutName(id: number): string {
-    const statut = this.statuts.find((s) => s.id === id);
-    return statut ? statut.designation : '';
+    const statut = this.statuts.find((s) => s.idStatut === id);
+    return statut ? statut.designationStatut : '';
   }
 
   getConcessionnaireName(id: number): string {
-    const concessionnaire = this.concessionnaires.find((c) => c.id === id);
-    return concessionnaire ? concessionnaire.designation : '';
+    const concessionnaire = this.concessionnaires.find((c) => c.idConcessionnaire === id);
+    return concessionnaire ? concessionnaire.nomConcessionnaire : '';
+  }
+
+  private getFile(): File | null {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    return fileInput && fileInput.files ? fileInput.files[0] : null;
   }
 }

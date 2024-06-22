@@ -1,26 +1,25 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+  interface Assurance {
+    id: number;
+    numPolice: string;
+    compagnie: number;
+    vehicule: number;
+    dateDebutGarantie: Date;
+    dateFinGarantie: Date;
+    attestation: string;
+  }
 
-interface Assurance {
-  id: number;
-  numPolice: string;
-  compagnie: number;
-  vehicule: number;
-  dateDebutGarantie: Date;
-  dateFinGarantie: Date;
-  attestation: string;
-}
+  interface Compagnie {
+    id: number;
+    nom: string;
+  }
 
-interface Compagnie {
-  id: number;
-  nom: string;
-}
-
-interface Vehicule {
-  id: number;
-  designation: string;
-}
+  interface Vehicule {
+    id: number;
+    designation: string;
+  }
 
 @Component({
   selector: 'app-list-assurance',
@@ -77,11 +76,13 @@ export class ListAssuranceComponent implements OnInit {
   isEdit: boolean = false;
   assuranceForm: FormGroup;
 
-  constructor(public dialog: MatDialog, private fb: FormBuilder) {
+  constructor(public dialog: MatDialog, private fb: FormBuilder,private formBuilder: FormBuilder,) {
     this.assuranceForm = this.fb.group({
-      id: [{ value: '', disabled: true }],
+      id: 0,
       numPolice: [''],
-      compagnie: [''],
+      compagnie: this.formBuilder.group({
+        idCompagnie: ['', Validators.required],
+      }),
       vehicule: [''],
       dateDebutGarantie: [''],
       dateFinGarantie: [''],

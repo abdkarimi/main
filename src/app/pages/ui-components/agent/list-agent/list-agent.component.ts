@@ -115,10 +115,11 @@ export class ListAgentComponent implements OnInit {
     this.isEdit = false;
     this.agentForm.reset();
     this.dialog.open(this.dialogAjoutModification, {
-      width: '800px',
+      width: '1000px',
+     // height: '90vh',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -145,10 +146,10 @@ export class ListAgentComponent implements OnInit {
     });
     this.fetchAgentImage(agent);
     this.dialog.open(this.dialogAjoutModification, {
-      width: '800px',
+      width: '1000px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
@@ -206,8 +207,8 @@ export class ListAgentComponent implements OnInit {
     this.dialog.open(this.dialogSuppression, {
       width: '400px',
       autoFocus: false,
-      enterAnimationDuration: '400ms',
-      exitAnimationDuration: '400ms',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
     });
   }
 
