@@ -18,6 +18,7 @@ import { CatvehiculeService } from 'src/app/services/CatVehicule/catvehicule.ser
 import { EnumerationService } from 'src/app/services/enumeration/enumeration.service';
 import { StatutService } from 'src/app/services/statut/statut.service';
 import { ConcessionnaireService } from 'src/app/services/Concessionnaire/concessionnaire.service';
+import { ImageService } from 'src/app/services/image/image.service';
 
 @Component({
   selector: 'app-list-vehicule',
@@ -57,6 +58,8 @@ export class ListVehiculeComponent implements OnInit {
   selectedVehicule: Vehicule;
   isEdit: boolean = false;
   vehiculeForm: FormGroup;
+  imgURL: any;
+  vehiculeImages: string[] = [];
 
   constructor(
     private vehiculeService: VehiculeService,
@@ -68,22 +71,36 @@ export class ListVehiculeComponent implements OnInit {
     private concessionnaireService: ConcessionnaireService,
     private toastr: ToastrService,
     public dialog: MatDialog,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private imageService: ImageService,
   ) {
     this.vehiculeForm = this.fb.group({
-      photo: [''],
-      matricule: ['', Validators.required],
-      dateMiseCirculation: ['', Validators.required],
+      idVehicule: 0,
+      photoVehicule: [''],
+      matriculeVehicule: ['', Validators.required],
+      dateCirculation: ['', Validators.required],
       puissanceFiscale: ['', Validators.required],
-      nbrePlace: ['', Validators.required],
-      couleur: ['', Validators.required],
-      kilometrage: ['', Validators.required],
-      modele: ['', Validators.required],
-      carburant: ['', Validators.required],
-      categorie: ['', Validators.required],
-      enumeration: ['', Validators.required],
-      statut: ['', Validators.required],
-      concessionnaire: ['', Validators.required],
+      nbPlace: ['', Validators.required],
+      couleurVehicule: ['', Validators.required],
+      kilometrageVehicule: ['', Validators.required],
+      modele: this.fb.group({
+        idModele: ['', Validators.required],
+      }),
+      typeCarburant: this.fb.group({
+        idTypeCarburant: ['', Validators.required],
+      }),
+      typeVehicule: this.fb.group({
+        idTypeVehicule: ['', Validators.required],
+      }),
+      enumeration: this.fb.group({
+        idEnumeration: ['', Validators.required],
+      }),
+      statut: this.fb.group({
+        idStatut: ['', Validators.required],
+      }),
+      concessionnaire: this.fb.group({
+        idConcessionnaire: ['', Validators.required],
+      }),
     });
   }
 
@@ -92,7 +109,12 @@ export class ListVehiculeComponent implements OnInit {
   }
 
   loadData(): void {
-    this.vehiculeService.getAllVehicules().subscribe((data) => (this.vehicules = data));
+    this.vehiculeService.getAllVehicules().subscribe((data) => {
+      this.vehicules = data;
+      this.vehicules.forEach((vehicule) => {
+        this.fetchVehiculesImage(vehicule);
+      });
+    });
     this.modeleService.getAllModeles().subscribe((data) => (this.modeles = data));
     this.tcarburantService.getAllTypeCarburants().subscribe((data) => (this.carburants = data));
     this.catvehiculeService.getAllTypeVehicules().subscribe((data) => (this.categories = data));
@@ -105,7 +127,7 @@ export class ListVehiculeComponent implements OnInit {
     this.isEdit = false;
     this.vehiculeForm.reset();
     this.dialog.open(this.dialogAjoutModification, {
-      width: '800px',
+      width: '1000px',
       autoFocus: false,
     });
   }
@@ -113,63 +135,90 @@ export class ListVehiculeComponent implements OnInit {
   ouvrirDialogModification(vehicule: Vehicule): void {
     this.isEdit = true;
     this.selectedVehicule = vehicule;
-    this.vehiculeForm.patchValue(vehicule);
+    this.vehiculeForm.patchValue({
+      idVehicule: vehicule.idVehicule,
+      matriculeVehicule: vehicule.matriculeVehicule,
+      dateCirculation: vehicule.dateCirculation,
+      puissanceFiscale: vehicule.puissanceFiscale,
+      nbPlace: vehicule.nbPlace,
+      couleurVehicule: vehicule.couleurVehicule,
+      kilometrageVehicule: vehicule.kilometrageVehicule,
+      modele: {
+        idModele: vehicule.modele.idModele,
+      },
+      typeCarburant: {
+        idTypeCarburant: vehicule.typeCarburant.idTypeCarburant,
+      },
+      typeVehicule: {
+        idTypeVehicule: vehicule.typeVehicule.idTypeVehicule,
+      },
+      enumeration: {
+        idEnumeration: vehicule.enumeration.idEnumeration,
+      },
+      statut: {
+        idStatut: vehicule.statut.idStatut,
+      },
+      concessionnaire: {
+        idConcessionnaire: vehicule.concessionnaire.idConcessionnaire,
+      },
+    });
+    this.fetchVehiculeImage(vehicule);
     this.dialog.open(this.dialogAjoutModification, {
-      width: '800px',
+      width: '1000px',
       autoFocus: false,
     });
   }
 
   ouvrirDialogConsultation(vehicule: Vehicule): void {
+    this.fetchVehiculeImage(vehicule)
     this.selectedVehicule = vehicule;
     this.dialog.open(this.dialogConsultation, {
-      width: '800px',
+      width: '1000px',
       autoFocus: false,
     });
   }
 
-  onFileSelected(event: Event): void {
-    const fileInput = event.target as HTMLInputElement;
-    if (fileInput.files && fileInput.files.length > 0) {
-      const file = fileInput.files[0];
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
       const reader = new FileReader();
-      reader.onload = () => {
-        this.vehiculeForm.patchValue({ photo: reader.result as string });
-      };
       reader.readAsDataURL(file);
+      reader.onload = () => {
+        this.imgURL = reader.result;
+      };
     }
   }
 
-  sauvegarderVehicule(): void {
+  sauvegarderVehicule(fileInput: any): void {
+    const file: File = fileInput.files[0];
+    if (this.vehiculeForm.invalid) {
+      this.toastr.warning('Veuillez corriger les erreurs du formulaire avant de soumettre.', 'Validation échouée');
+      return;
+    }
     if (this.isEdit) {
-      this.vehiculeService.updateVehicule(this.selectedVehicule.idVehicule, this.vehiculeForm.value, this.getFile() || undefined).subscribe(
+      this.vehiculeService.updateVehicule(this.selectedVehicule.idVehicule, this.vehiculeForm.value, file).subscribe(
         () => {
-          this.toastr.success('Véhicule mis à jour avec succès');
           this.loadData();
-          this.dialog.closeAll();
+          this.fermerDialog();
+          this.vehiculeForm.reset();
+          this.toastr.success('Véhicule modifié avec succès.', 'Succès');
         },
         (error) => {
-          this.toastr.error('Erreur lors de la mise à jour du véhicule');
-          console.error(error);
+          this.handleHttpError(error);
         }
       );
     } else {
-      const file = this.getFile();
-      if (file) {
-        this.vehiculeService.saveVehicule(this.vehiculeForm.value, file).subscribe(
-          () => {
-            this.toastr.success('Véhicule ajouté avec succès');
-            this.loadData();
-            this.dialog.closeAll();
-          },
-          (error) => {
-            this.toastr.error('Erreur lors de l\'ajout du véhicule');
-            console.error(error);
-          }
-        );
-      } else {
-        this.toastr.error('Le fichier de photo est requis');
-      }
+      this.vehiculeService.saveVehicule(this.vehiculeForm.value, file).subscribe(
+        () => {
+          this.loadData();
+          this.fermerDialog();
+          this.vehiculeForm.reset();
+          this.toastr.success('Véhicule ajouté avec succès.', 'Succès');
+        },
+        (error) => {
+          this.handleHttpError(error);
+        }
+      );
     }
   }
 
@@ -188,49 +237,45 @@ export class ListVehiculeComponent implements OnInit {
   confirmerSuppression(): void {
     this.vehiculeService.deleteVehicule(this.selectedVehicule.idVehicule).subscribe(
       () => {
-        this.toastr.success('Véhicule supprimé avec succès');
-        this.loadData();
+        this.vehicules = this.vehicules.filter((v) => v !== this.selectedVehicule);
         this.fermerDialog();
+        this.toastr.success('Véhicule supprimé avec succès.', 'Succès');
       },
       (error) => {
-        this.toastr.error('Erreur lors de la suppression du véhicule');
-        console.error(error);
+        this.handleHttpError(error);
       }
     );
   }
 
-  getModeleName(id: number): string {
-    const modele = this.modeles.find((m) => m.idModele === id);
-    return modele ? modele.libelleModele : '';
+  private handleHttpError(error: any): void {
+    if (error.status === 409) {
+      this.toastr.warning('Un véhicule avec les mêmes attributs existe déjà.', 'Erreur de conflit');
+    } else if (error.status === 500) {
+      this.toastr.error("Erreur lors de l'enregistrement du véhicule.", 'Erreur interne du serveur');
+    } else {
+      this.toastr.error("Une erreur inattendue s'est produite.", 'Erreur');
+    }
   }
 
-  getCarburantName(id: number): string {
-    const carburant = this.carburants.find((c) => c.idTypeCarburant === id);
-    return carburant ? carburant.libelleTypeCarburant : '';
+  fetchVehiculeImage(vehicule: Vehicule): void {
+    this.imageService.fetchImage(vehicule.photoVehicule).subscribe(
+      (imgURL) => {
+        this.imgURL = imgURL; // Set the image URL for preview
+      },
+      (error) => {
+        console.error('Error fetching Vehicule image:', error);
+      }
+    );
   }
 
-  getCategorieName(id: number): string {
-    const categorie = this.categories.find((c) => c.idTypeVehicule === id);
-    return categorie ? categorie.libelleTypeVehicule : '';
-  }
-
-  getEnumerationName(id: number): string {
-    const enumeration = this.enumerations.find((e) => e.idEnumeration === id);
-    return enumeration ? enumeration.designationEnumeration : '';
-  }
-
-  getStatutName(id: number): string {
-    const statut = this.statuts.find((s) => s.idStatut === id);
-    return statut ? statut.designationStatut : '';
-  }
-
-  getConcessionnaireName(id: number): string {
-    const concessionnaire = this.concessionnaires.find((c) => c.idConcessionnaire === id);
-    return concessionnaire ? concessionnaire.nomConcessionnaire : '';
-  }
-
-  private getFile(): File | null {
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    return fileInput && fileInput.files ? fileInput.files[0] : null;
+  fetchVehiculesImage(vehicule: Vehicule): void {
+    this.imageService.fetchImage(vehicule.photoVehicule).subscribe(
+      (imageUrl) => {
+        this.vehiculeImages[vehicule.idVehicule] = imageUrl;
+      },
+      (error) => {
+        console.error('Error fetching Vehicule image:', error);
+      }
+    );
   }
 }

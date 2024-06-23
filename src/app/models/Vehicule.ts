@@ -10,6 +10,7 @@ export interface Vehicule {
   matriculeVehicule: string;
   dateCirculation: Date;
   puissanceFiscale: number;
+  kilometrageVehicule: number;
   nbPlace: number;
   couleurVehicule: string;
   photoVehicule: string;

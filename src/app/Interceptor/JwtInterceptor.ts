@@ -23,7 +23,7 @@ export class JwtInterceptor implements HttpInterceptor {
 
     // Clone the request with the updated headers
     request = request.clone({ headers });
-    console.log('HTTP Headers:', headers);
+    // console.log('HTTP Headers:', headers);
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401 || error.status === 403) {
