@@ -1,332 +1,369 @@
 <mat-card class="cardWithShadow theme-card">
     <mat-card-header>
-      <div class="d-flex justify-content-between w-100">
-        <mat-card-title class="m-b-0 text-right">Véhicule</mat-card-title>
-        <button mat-raised-button color="primary" (click)="ouvrirDialogAjout()">Nouveau</button>
-      </div>
+        <div class="d-flex justify-content-between w-100">
+            <mat-card-title class="m-b-0 text-right">Véhicule</mat-card-title>
+            <button mat-raised-button color="primary" (click)="ouvrirDialogAjout()">Nouveau</button>
+        </div>
     </mat-card-header>
     <mat-card-content class="b-t-1">
-      <div class="row">
-        <div class="col-lg-8">
-          <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
-            <input matInput placeholder="Recherche" />
-            <mat-icon matSuffix role="img">
-              <i-tabler name="search" class="icon-20"></i-tabler>
-            </mat-icon>
-          </mat-form-field>
+        <div class="row">
+            <div class="col-lg-8">
+                <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
+                    <input matInput placeholder="Recherche" />
+                    <mat-icon matSuffix role="img">
+                        <i-tabler name="search" class="icon-20"></i-tabler>
+                    </mat-icon>
+                </mat-form-field>
+            </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-lg-12">
-          <div class="table-responsive">
-            <table mat-table [dataSource]="vehicules" class="w-100">
-              <ng-container matColumnDef="photo">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Photo</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">
-                  <img [src]="vehiculeImages[element.idVehicule]" alt="Photo de {{ element.matriculeVehicule }}" width="100" class="rounded-circle" />
-                </td>
-              </ng-container>
-  
-              <ng-container matColumnDef="matricule">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Matricule</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.matriculeVehicule }}</td>
-              </ng-container>
-  
-              <ng-container matColumnDef="dateMiseCirculation">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date de mise en Circulation</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateCirculation | date: 'dd/MM/yyyy' }}</td>
-              </ng-container>
-  
-              <ng-container matColumnDef="puissanceFiscale">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Puissance Fiscale</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.puissanceFiscale }}</td>
-              </ng-container>
-  
-              <ng-container matColumnDef="nbrePlace">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Nombre de Places</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.nbPlace }}</td>
-              </ng-container>
-  
-              <ng-container matColumnDef="couleur">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Couleur</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.couleurVehicule }}</td>
-              </ng-container>
-  
-              <ng-container matColumnDef="kilometrage">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Kilométrage</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.kilometrageVehicule }}</td>
-              </ng-container>
-  
-              <ng-container matColumnDef="modele">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Modèle</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.modele.libelleModele }}</td>
-              </ng-container>
-  
-              <ng-container matColumnDef="carburant">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Carburant</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">{{element.typeCarburant.libelleTypeCarburant}}</td>
-              </ng-container>
-  
-              <ng-container matColumnDef="categorie">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Catégorie</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.typeVehicule.libelleTypeVehicule }}</td>
-              </ng-container>
-  
-              <ng-container matColumnDef="enumeration">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Énumération</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.enumeration.designationEnumeration }}</td>
-              </ng-container>
-  
-              <ng-container matColumnDef="statut">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Statut</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.statut.designationStatut }}</td>
-              </ng-container>
-  
-              <ng-container matColumnDef="concessionnaire">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Concessionnaire</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.concessionnaire.nomConcessionnaire }}</td>
-              </ng-container>
-  
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Actions</th>
-                <td mat-cell *matCellDef="let element" class="mat-body-1">
-                  <button mat-icon-button color="accent" (click)="ouvrirDialogModification(element)">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                  <button mat-icon-button color="warn" (click)="ouvrirDialogSuppression(element)">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                  <button mat-icon-button color="primary" (click)="ouvrirDialogConsultation(element)">
-                    <mat-icon>visibility</mat-icon>
-                  </button>
-                </td>
-              </ng-container>
-  
-              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
-            <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Sélectionner la page des véhicules"></mat-paginator>
-          </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="table-responsive">
+                    <table mat-table [dataSource]="vehicules" class="w-100">
+                        <ng-container matColumnDef="photo">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Photo</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">
+                                <img [src]="vehiculeImages[element.idVehicule]"
+                                    alt="Photo de {{ element.matriculeVehicule }}" width="100" class="rounded-circle" />
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="matricule">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Matricule</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.matriculeVehicule }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="dateMiseCirculation">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date de mise en
+                                Circulation</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateCirculation | date:
+                                'dd/MM/yyyy' }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="puissanceFiscale">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Puissance
+                                Fiscale</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.puissanceFiscale }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="nbrePlace">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Nombre de Places
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.nbPlace }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="couleur">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Couleur</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.couleurVehicule }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="kilometrage">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Kilométrage</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.kilometrageVehicule }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="modele">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Modèle</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.modele.libelleModele }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="carburant">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Carburant</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">
+                                {{element.typeCarburant.libelleTypeCarburant}}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="categorie">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Catégorie</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{
+                                element.typeVehicule.libelleTypeVehicule }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="enumeration">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Énumération</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{
+                                element.enumeration.designationEnumeration }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="statut">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Statut</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{
+                                element.statut.designationStatut }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="concessionnaire">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Concessionnaire
+                            </th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{
+                                element.concessionnaire.nomConcessionnaire }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="actions">
+                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Actions</th>
+                            <td mat-cell *matCellDef="let element" class="mat-body-1">
+                                <button mat-icon-button color="accent" (click)="ouvrirDialogModification(element)">
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                                <button mat-icon-button color="warn" (click)="ouvrirDialogSuppression(element)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                                <button mat-icon-button color="primary" (click)="ouvrirDialogConsultation(element)">
+                                    <mat-icon>visibility</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
+                        aria-label="Sélectionner la page des véhicules"></mat-paginator>
+                </div>
+            </div>
         </div>
-      </div>
     </mat-card-content>
-  </mat-card>
-  
-  <!-- Dialog pour Ajouter/Modifier un Véhicule -->
-  <ng-template #dialogAjoutModification let-dialogRef>
+</mat-card>
+
+<!-- Dialog pour Ajouter/Modifier un Véhicule -->
+<ng-template #dialogAjoutModification let-dialogRef>
     <form [formGroup]="vehiculeForm" enctype="multipart/form-data" (ngSubmit)="sauvegarderVehicule(fileInput)">
-      <div class="mdc-dialog__container">
-        <div class="mat-mdc-dialog-surface mdc-dialog__surface">
-          <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Véhicule' : 'Ajouter Véhicule' }}</h2>
-          <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
-            <div class="row">
-              <div class="col">
-                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                  <mat-label>Matricule</mat-label>
-                  <input matInput formControlName="matriculeVehicule" />
-                  <mat-error *ngIf="vehiculeForm.get('matriculeVehicule').invalid && vehiculeForm.get('matriculeVehicule').touched">
-                    Matricule est requis.
-                  </mat-error>
-                </mat-form-field>
-              </div>
-              <div class="col">
-                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                  <mat-label>Date de mise en Circulation</mat-label>
-                  <input matInput formControlName="dateCirculation" [matDatepicker]="pickerMiseCirculation" />
-                  <mat-datepicker-toggle matSuffix [for]="pickerMiseCirculation"></mat-datepicker-toggle>
-                  <mat-datepicker #pickerMiseCirculation></mat-datepicker>
-                  <mat-error *ngIf="vehiculeForm.get('dateCirculation').invalid && vehiculeForm.get('dateCirculation').touched">
-                    Date de mise en circulation est requise.
-                  </mat-error>
-                </mat-form-field>
-              </div>
-              <div class="col">
-                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                  <mat-label>Puissance Fiscale</mat-label>
-                  <input matInput formControlName="puissanceFiscale" />
-                  <mat-error *ngIf="vehiculeForm.get('puissanceFiscale').invalid && vehiculeForm.get('puissanceFiscale').touched">
-                    Puissance fiscale est requise.
-                  </mat-error>
-                </mat-form-field>
-              </div>
+        <div class="mdc-dialog__container">
+            <div class="mat-mdc-dialog-surface mdc-dialog__surface">
+                <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Véhicule' :
+                    'Ajouter Véhicule' }}</h2>
+                <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Matricule</mat-label>
+                                <input matInput formControlName="matriculeVehicule" />
+                                <mat-error
+                                    *ngIf="vehiculeForm.get('matriculeVehicule').invalid && vehiculeForm.get('matriculeVehicule').touched">
+                                    Matricule est requis.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Date de mise en Circulation</mat-label>
+                                <input matInput formControlName="dateCirculation"
+                                    [matDatepicker]="pickerMiseCirculation" />
+                                <mat-datepicker-toggle matSuffix [for]="pickerMiseCirculation"></mat-datepicker-toggle>
+                                <mat-datepicker #pickerMiseCirculation></mat-datepicker>
+                                <mat-error
+                                    *ngIf="vehiculeForm.get('dateCirculation').invalid && vehiculeForm.get('dateCirculation').touched">
+                                    Date de mise en circulation est requise.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Puissance Fiscale</mat-label>
+                                <input matInput formControlName="puissanceFiscale" />
+                                <mat-error
+                                    *ngIf="vehiculeForm.get('puissanceFiscale').invalid && vehiculeForm.get('puissanceFiscale').touched">
+                                    Puissance fiscale est requise.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Couleur</mat-label>
+                                <input matInput formControlName="couleurVehicule" />
+                                <mat-error
+                                    *ngIf="vehiculeForm.get('couleurVehicule').invalid && vehiculeForm.get('couleurVehicule').touched">
+                                    Couleur est requise.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Nombre de Places</mat-label>
+                                <input matInput formControlName="nbPlace" />
+                                <mat-error
+                                    *ngIf="vehiculeForm.get('nbPlace').invalid && vehiculeForm.get('nbPlace').touched">
+                                    Nombre de places est requis.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Kilométrage</mat-label>
+                                <input matInput formControlName="kilometrageVehicule" />
+                                <mat-error
+                                    *ngIf="vehiculeForm.get('kilometrageVehicule').invalid && vehiculeForm.get('kilometrageVehicule').touched">
+                                    Kilométrage est requis.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Modèle</mat-label>
+                                <mat-select [formControl]="vehiculeForm.get('modele')?.get('idModele')">
+                                    <mat-option *ngFor="let modele of modeles" [value]="modele.idModele">
+                                        {{ modele.libelleModele }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="vehiculeForm.get('modele.idModele').invalid && vehiculeForm.get('modele.idModele').touched">
+                                    Modèle est requis.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Carburant</mat-label>
+                                <mat-select [formControl]="vehiculeForm.get('typeCarburant')?.get('idTypeCarburant')">
+                                    <mat-option *ngFor="let carburant of carburants"
+                                        [value]="carburant.idTypeCarburant">
+                                        {{ carburant.libelleTypeCarburant }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="vehiculeForm.get('typeCarburant.idTypeCarburant').invalid && vehiculeForm.get('typeCarburant.idTypeCarburant').touched">
+                                    Carburant est requis.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Concessionnaire</mat-label>
+                                <mat-select
+                                    [formControl]="vehiculeForm.get('concessionnaire')?.get('idConcessionnaire')">
+                                    <mat-option *ngFor="let concessionnaire of concessionnaires"
+                                        [value]="concessionnaire.idConcessionnaire">
+                                        {{ concessionnaire.nomConcessionnaire }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="vehiculeForm.get('concessionnaire.idConcessionnaire').invalid && vehiculeForm.get('concessionnaire.idConcessionnaire').touched">
+                                    Concessionnaire est requis.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Catégorie</mat-label>
+                                <mat-select [formControl]="vehiculeForm.get('typeVehicule')?.get('idTypeVehicule')">
+                                    <mat-option *ngFor="let categorie of categories" [value]="categorie.idTypeVehicule">
+                                        {{ categorie.libelleTypeVehicule }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="vehiculeForm.get('typeVehicule.idTypeVehicule').invalid && vehiculeForm.get('typeVehicule.idTypeVehicule').touched">
+                                    Catégorie est requise.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Énumération</mat-label>
+                                <mat-select [formControl]="vehiculeForm.get('enumeration')?.get('idEnumeration')">
+                                    <mat-option *ngFor="let enumeration of enumerations"
+                                        [value]="enumeration.idEnumeration">
+                                        {{ enumeration.designationEnumeration }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="vehiculeForm.get('enumeration.idEnumeration').invalid && vehiculeForm.get('enumeration.idEnumeration').touched">
+                                    Énumération est requise.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                                <mat-label>Statut</mat-label>
+                                <mat-select [formControl]="vehiculeForm.get('statut')?.get('idStatut')">
+                                    <mat-option *ngFor="let statut of statuts" [value]="statut.idStatut">
+                                        {{ statut.designationStatut }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="vehiculeForm.get('statut.idStatut').invalid && vehiculeForm.get('statut.idStatut').touched">
+                                    Statut est requis.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <input type="file" accept="image/*" #fileInput (change)="onFileSelected($event)"
+                                formControlName="photoVehicule" />
+                            <img [src]="imgURL" height="100" width="100" *ngIf="imgURL">
+                        </div>
+                    </div>
+                </mat-dialog-content>
+                <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
+                    <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
+                    <button mat-flat-button color="primary" type="submit">{{ isEdit ? 'Modifier' : 'Ajouter' }}</button>
+                </mat-dialog-actions>
             </div>
-            <div class="row">
-              <div class="col">
-                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                  <mat-label>Couleur</mat-label>
-                  <input matInput formControlName="couleurVehicule" />
-                  <mat-error *ngIf="vehiculeForm.get('couleurVehicule').invalid && vehiculeForm.get('couleurVehicule').touched">
-                    Couleur est requise.
-                  </mat-error>
-                </mat-form-field>
-              </div>
-              <div class="col">
-                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                  <mat-label>Nombre de Places</mat-label>
-                  <input matInput formControlName="nbPlace" />
-                  <mat-error *ngIf="vehiculeForm.get('nbPlace').invalid && vehiculeForm.get('nbPlace').touched">
-                    Nombre de places est requis.
-                  </mat-error>
-                </mat-form-field>
-              </div>
-              <div class="col">
-                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                  <mat-label>Kilométrage</mat-label>
-                  <input matInput formControlName="kilometrageVehicule" />
-                  <mat-error *ngIf="vehiculeForm.get('kilometrageVehicule').invalid && vehiculeForm.get('kilometrageVehicule').touched">
-                    Kilométrage est requis.
-                  </mat-error>
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                  <mat-label>Modèle</mat-label>
-                  <mat-select [formControl]="vehiculeForm.get('modele')?.get('idModele')">
-                    <mat-option *ngFor="let modele of modeles" [value]="modele.idModele">
-                      {{ modele.libelleModele }}
-                    </mat-option>
-                  </mat-select>
-                  <mat-error *ngIf="vehiculeForm.get('modele.idModele').invalid && vehiculeForm.get('modele.idModele').touched">
-                    Modèle est requis.
-                  </mat-error>
-                </mat-form-field>
-              </div>
-              <div class="col">
-                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                  <mat-label>Carburant</mat-label>
-                  <mat-select [formControl]="vehiculeForm.get('typeCarburant')?.get('idTypeCarburant')">
-                    <mat-option *ngFor="let carburant of carburants" [value]="carburant.idTypeCarburant">
-                      {{ carburant.libelleTypeCarburant }}
-                    </mat-option>
-                  </mat-select>
-                  <mat-error *ngIf="vehiculeForm.get('typeCarburant.idTypeCarburant').invalid && vehiculeForm.get('typeCarburant.idTypeCarburant').touched">
-                    Carburant est requis.
-                  </mat-error>
-                </mat-form-field>
-              </div>
-              <div class="col">
-                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                  <mat-label>Concessionnaire</mat-label>
-                  <mat-select [formControl]="vehiculeForm.get('concessionnaire')?.get('idConcessionnaire')">
-                    <mat-option *ngFor="let concessionnaire of concessionnaires" [value]="concessionnaire.idConcessionnaire">
-                      {{ concessionnaire.nomConcessionnaire }}
-                    </mat-option>
-                  </mat-select>
-                  <mat-error *ngIf="vehiculeForm.get('concessionnaire.idConcessionnaire').invalid && vehiculeForm.get('concessionnaire.idConcessionnaire').touched">
-                    Concessionnaire est requis.
-                  </mat-error>
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                  <mat-label>Catégorie</mat-label>
-                  <mat-select [formControl]="vehiculeForm.get('typeVehicule')?.get('idTypeVehicule')">
-                    <mat-option *ngFor="let categorie of categories" [value]="categorie.idTypeVehicule">
-                      {{ categorie.libelleTypeVehicule }}
-                    </mat-option>
-                  </mat-select>
-                  <mat-error *ngIf="vehiculeForm.get('typeVehicule.idTypeVehicule').invalid && vehiculeForm.get('typeVehicule.idTypeVehicule').touched">
-                    Catégorie est requise.
-                  </mat-error>
-                </mat-form-field>
-              </div>
-              <div class="col">
-                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                  <mat-label>Énumération</mat-label>
-                  <mat-select [formControl]="vehiculeForm.get('enumeration')?.get('idEnumeration')">
-                    <mat-option *ngFor="let enumeration of enumerations" [value]="enumeration.idEnumeration">
-                      {{ enumeration.designationEnumeration }}
-                    </mat-option>
-                  </mat-select>
-                  <mat-error *ngIf="vehiculeForm.get('enumeration.idEnumeration').invalid && vehiculeForm.get('enumeration.idEnumeration').touched">
-                    Énumération est requise.
-                  </mat-error>
-                </mat-form-field>
-              </div>
-              <div class="col">
-                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                  <mat-label>Statut</mat-label>
-                  <mat-select [formControl]="vehiculeForm.get('statut')?.get('idStatut')">
-                    <mat-option *ngFor="let statut of statuts" [value]="statut.idStatut">
-                      {{ statut.designationStatut }}
-                    </mat-option>
-                  </mat-select>
-                  <mat-error *ngIf="vehiculeForm.get('statut.idStatut').invalid && vehiculeForm.get('statut.idStatut').touched">
-                    Statut est requis.
-                  </mat-error>
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <input type="file" accept="image/*" #fileInput (change)="onFileSelected($event)" formControlName="photoVehicule" />
-                <img [src]="imgURL" height="100" width="100" *ngIf="imgURL">
-              </div>
-            </div>
-          </mat-dialog-content>
-          <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
-            <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
-            <button mat-flat-button color="primary" type="submit">{{ isEdit ? 'Modifier' : 'Ajouter' }}</button>
-          </mat-dialog-actions>
         </div>
-      </div>
     </form>
-  </ng-template>
-  
-  <!-- Dialog pour Consulter un Véhicule -->
-  <ng-template #dialogConsultation let-dialogRef>
+</ng-template>
+
+<!-- Dialog pour Consulter un Véhicule -->
+<ng-template #dialogConsultation let-dialogRef>
     <div class="mdc-dialog__container">
-      <div class="mat-mdc-dialog-surface mdc-dialog__surface">
-        <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Détails du Véhicule</h2>
-        <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
-          <div class="row">
-            <div class="col-12">
-              <img [src]="imgURL" alt="Photo du véhicule" class="vehicule-photo-large" width="150"/>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <p><strong>Matricule:</strong> {{ selectedVehicule?.matriculeVehicule }}</p>
-              <p><strong>Date de mise en Circulation:</strong> {{ selectedVehicule?.dateCirculation | date: 'dd/MM/yyyy' }}</p>
-              <p><strong>Puissance Fiscale:</strong> {{ selectedVehicule?.puissanceFiscale }}</p>
-              <p><strong>Nombre de Places:</strong> {{ selectedVehicule?.nbPlace }}</p>
-            </div>
-            <div class="col">
-              <p><strong>Couleur:</strong> {{ selectedVehicule?.couleurVehicule }}</p>
-              <p><strong>Kilométrage:</strong> {{ selectedVehicule?.kilometrageVehicule }}</p>
-              <p><strong>Modèle:</strong> {{ selectedVehicule?.modele.libelleModele }}</p>
-              <p><strong>Carburant:</strong> {{ selectedVehicule?.typeCarburant.libelleTypeCarburant }}</p>
-            </div>
-            <div class="col">
-              <p><strong>Catégorie:</strong> {{ selectedVehicule?.typeVehicule.libelleTypeVehicule  }}</p>
-              <p><strong>Énumération:</strong> {{ selectedVehicule?.enumeration.designationEnumeration }}</p>
-              <p><strong>Statut:</strong> {{ selectedVehicule?.statut.designationStatut }}</p>
-              <p><strong>Concessionnaire:</strong> {{ selectedVehicule?.concessionnaire.nomConcessionnaire }}</p>
-            </div>
-          </div>
-        </mat-dialog-content>
-        <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
-          <button mat-flat-button color="primary" (click)="fermerDialog()">Fermer</button>
-        </mat-dialog-actions>
-      </div>
-    </div>
-  </ng-template>
-  
-  <!-- Dialog de Confirmation de Suppression -->
-  <ng-template #dialogSuppression let-dialogRef>
-    <div class="mdc-dialog__container">
-      <div class="mat-mdc-dialog-surface mdc-dialog__surface">
-        <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Supprimer</h2>
-        <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{ selectedVehicule?.idVehicule }}</span>?</div>
-        <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
-          <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
-          <button mat-flat-button color="primary" (click)="confirmerSuppression()">Supprimer</button>
+        <div class="mat-mdc-dialog-surface mdc-dialog__surface">
+            <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Détails du Véhicule</h2>
+            <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
+                <div class="row">
+                    <div class="col-12">
+                        <img [src]="imgURL" alt="Photo du véhicule" class="vehicule-photo-large" width="150" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <p><strong>Matricule:</strong> {{ selectedVehicule?.matriculeVehicule }}</p>
+                        <p><strong>Date de mise en Circulation:</strong> {{ selectedVehicule?.dateCirculation | date:
+                            'dd/MM/yyyy' }}</p>
+                        <p><strong>Puissance Fiscale:</strong> {{ selectedVehicule?.puissanceFiscale }}</p>
+                        <p><strong>Nombre de Places:</strong> {{ selectedVehicule?.nbPlace }}</p>
+                    </div>
+                    <div class="col">
+                        <p><strong>Couleur:</strong> {{ selectedVehicule?.couleurVehicule }}</p>
+                        <p><strong>Kilométrage:</strong> {{ selectedVehicule?.kilometrageVehicule }}</p>
+                        <p><strong>Modèle:</strong> {{ selectedVehicule?.modele.libelleModele }}</p>
+                        <p><strong>Carburant:</strong> {{ selectedVehicule?.typeCarburant.libelleTypeCarburant }}</p>
+                    </div>
+                    <div class="col">
+                        <p><strong>Catégorie:</strong> {{ selectedVehicule?.typeVehicule.libelleTypeVehicule }}</p>
+                        <p><strong>Énumération:</strong> {{ selectedVehicule?.enumeration.designationEnumeration }}</p>
+                        <p><strong>Statut:</strong> {{ selectedVehicule?.statut.designationStatut }}</p>
+                        <p><strong>Concessionnaire:</strong> {{ selectedVehicule?.concessionnaire.nomConcessionnaire }}
+                        </p>
+                    </div>
+                </div>
+            </mat-dialog-content>
+            <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
+                <button mat-flat-button color="primary" (click)="fermerDialog()">Fermer</button>
+            </mat-dialog-actions>
         </div>
-      </div>
     </div>
-  </ng-template>
-  
+</ng-template>
+
+<!-- Dialog de Confirmation de Suppression -->
+<ng-template #dialogSuppression let-dialogRef>
+    <div class="mdc-dialog__container">
+        <div class="mat-mdc-dialog-surface mdc-dialog__surface">
+            <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Supprimer</h2>
+            <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{
+                    selectedVehicule?.idVehicule }}</span>?</div>
+            <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
+                <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
+                <button mat-flat-button color="primary" (click)="confirmerSuppression()">Supprimer</button>
+            </div>
+        </div>
+    </div>
+</ng-template>
