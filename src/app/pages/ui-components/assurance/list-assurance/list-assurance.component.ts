@@ -1,25 +1,14 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-  interface Assurance {
-    id: number;
-    numPolice: string;
-    compagnie: number;
-    vehicule: number;
-    dateDebutGarantie: Date;
-    dateFinGarantie: Date;
-    attestation: string;
-  }
-
-  interface Compagnie {
-    id: number;
-    nom: string;
-  }
-
-  interface Vehicule {
-    id: number;
-    designation: string;
-  }
+import { ToastrService } from 'ngx-toastr';
+import { Assurance } from 'src/app/models/Assurance';
+import { Compagnie } from 'src/app/models/Compagnie';
+import { Vehicule } from 'src/app/models/Vehicule';
+import { AssuranceService } from 'src/app/services/Assurance/assurance.service';
+import { VehiculeService } from 'src/app/services/Vehicule/vehicule.service';
+import { CompagnieService } from 'src/app/services/compagnie/compagnie.service';
+import { ImageService } from 'src/app/services/image/image.service';
 
 @Component({
   selector: 'app-list-assurance',
@@ -32,7 +21,7 @@ export class ListAssuranceComponent implements OnInit {
 
   displayedColumns: string[] = [
     'id',
-    'numPolice',
+    'police',
     'compagnie',
     'vehicule',
     'dateDebutGarantie',
@@ -41,100 +30,128 @@ export class ListAssuranceComponent implements OnInit {
     'actions',
   ];
 
-  assurances: Assurance[] = [
-    {
-      id: 1,
-      numPolice: 'AB12345',
-      compagnie: 1,
-      vehicule: 1,
-      dateDebutGarantie: new Date('2022-01-01'),
-      dateFinGarantie: new Date('2023-01-01'),
-      attestation: 'https://via.placeholder.com/150'
-    },
-    {
-      id: 2,
-      numPolice: 'CD67890',
-      compagnie: 2,
-      vehicule: 2,
-      dateDebutGarantie: new Date('2021-05-15'),
-      dateFinGarantie: new Date('2022-05-15'),
-      attestation: 'https://via.placeholder.com/150'
-    },
-  ];
-
-  compagnies: Compagnie[] = [
-    { id: 1, nom: 'Compagnie A' },
-    { id: 2, nom: 'Compagnie B' },
-  ];
-
-  vehicules: Vehicule[] = [
-    { id: 1, designation: 'Peugeot 208' },
-    { id: 2, designation: 'Renault Clio' },
-  ];
+  assurances: Assurance[] = [];
+  compagnies: Compagnie[] = [];
+  vehicules: Vehicule[] = [];
 
   selectedAssurance: Assurance;
   isEdit: boolean = false;
   assuranceForm: FormGroup;
+  pdfURL: any;
+  assurancePDF: { [key: number]: string } = {};
 
-  constructor(public dialog: MatDialog, private fb: FormBuilder,private formBuilder: FormBuilder,) {
+  constructor(
+    private assuranceService: AssuranceService,
+    private vehiculeService: VehiculeService,
+    private compagnieService: CompagnieService,
+    private toastr: ToastrService,
+    public dialog: MatDialog,
+    private fb: FormBuilder,
+    private imageService: ImageService,
+  ) {
     this.assuranceForm = this.fb.group({
-      id: 0,
-      numPolice: [''],
-      compagnie: this.formBuilder.group({
+      idAssurance: 0,
+      police: ['', Validators.required],
+      debutGarantie: ['', Validators.required],
+      finGarantie: ['', Validators.required],
+      cheminPolice: [''],
+      compagnie: this.fb.group({
         idCompagnie: ['', Validators.required],
       }),
-      vehicule: [''],
-      dateDebutGarantie: [''],
-      dateFinGarantie: [''],
-      attestation: ['']
+      vehicule: this.fb.group({
+        idVehicule: ['', Validators.required],
+      }),
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+  loadData(): void {
+    this.assuranceService.getAllAssurances().subscribe((data) => {
+      this.assurances = data;
+      this.assurances.forEach((assurance) => {
+        this.fetchAssurancesImage(assurance);
+      });
+    });
+    this.vehiculeService.getAllVehicules().subscribe((data) => (this.vehicules = data));
+    this.compagnieService.getAllCompagnies().subscribe((data) => (this.compagnies = data));
+  }
 
   ouvrirDialogAjout(): void {
     this.isEdit = false;
     this.assuranceForm.reset();
     this.dialog.open(this.dialogAjoutModification, {
-      width: '800px',
+      width: '1000px',
       autoFocus: false,
-      enterAnimationDuration: '100ms',
-      exitAnimationDuration: '100ms',
     });
   }
 
   ouvrirDialogModification(assurance: Assurance): void {
     this.isEdit = true;
     this.selectedAssurance = assurance;
-    this.assuranceForm.patchValue(assurance);
+    this.assuranceForm.patchValue({
+      idAssurance: assurance.idAssurance,
+      police: assurance.police,
+      debutGarantie: assurance.debutGarantie,
+      finGarantie: assurance.finGarantie,
+      compagnie: {
+        idCompagnie: assurance.compagnie.idCompagnie,
+      },
+      vehicule: {
+        idVehicule: assurance.vehicule.idVehicule,
+      },
+    });
+    this.fetchAssuranceImage(assurance);
     this.dialog.open(this.dialogAjoutModification, {
-      width: '800px',
+      width: '1000px',
       autoFocus: false,
-      enterAnimationDuration: '100ms',
-      exitAnimationDuration: '100ms',
     });
   }
 
-  onFileSelected(event: Event): void {
-    const fileInput = event.target as HTMLInputElement;
-    if (fileInput.files && fileInput.files.length > 0) {
-      const file = fileInput.files[0];
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
       const reader = new FileReader();
-      reader.onload = () => {
-        this.assuranceForm.patchValue({ attestation: reader.result as string });
-      };
       reader.readAsDataURL(file);
+      reader.onload = () => {
+        this.pdfURL = reader.result;
+      };
     }
   }
 
-  sauvegarderAssurance(): void {
-    const assuranceData = this.assuranceForm.getRawValue();
-    if (this.isEdit) {
-      Object.assign(this.selectedAssurance, assuranceData);
-    } else {
-      this.assurances.push(assuranceData);
+  sauvegarderAssurance(fileInput: any): void {
+    const file: File = fileInput.files[0];
+    if (this.assuranceForm.invalid) {
+      this.toastr.warning('Veuillez corriger les erreurs du formulaire avant de soumettre.', 'Validation échouée');
+      return;
     }
-    this.dialog.closeAll();
+    if (this.isEdit) {
+      this.assuranceService.updateAssurance(this.selectedAssurance.idAssurance, this.assuranceForm.value, file).subscribe(
+        () => {
+          this.loadData();
+          this.fermerDialog();
+          this.assuranceForm.reset();
+          this.toastr.success('Assurance modifiée avec succès.', 'Succès');
+        },
+        (error) => {
+          this.handleHttpError(error);
+        }
+      );
+    } else {
+      this.assuranceService.createAssurance(this.assuranceForm.value, file).subscribe(
+        () => {
+          this.loadData();
+          this.fermerDialog();
+          this.assuranceForm.reset();
+          this.toastr.success('Assurance ajoutée avec succès.', 'Succès');
+        },
+        (error) => {
+          this.handleHttpError(error);
+        }
+      );
+    }
   }
 
   ouvrirDialogSuppression(assurance: Assurance): void {
@@ -142,8 +159,6 @@ export class ListAssuranceComponent implements OnInit {
     this.dialog.open(this.dialogSuppression, {
       width: '400px',
       autoFocus: false,
-      enterAnimationDuration: '100ms',
-      exitAnimationDuration: '100ms',
     });
   }
 
@@ -152,17 +167,61 @@ export class ListAssuranceComponent implements OnInit {
   }
 
   confirmerSuppression(): void {
-    this.assurances = this.assurances.filter(a => a !== this.selectedAssurance);
-    this.fermerDialog();
+    this.assuranceService.deleteAssurance(this.selectedAssurance.idAssurance).subscribe(
+      () => {
+        this.assurances = this.assurances.filter((a) => a !== this.selectedAssurance);
+        this.fermerDialog();
+        this.toastr.success('Assurance supprimée avec succès.', 'Succès');
+      },
+      (error) => {
+        this.handleHttpError(error);
+      }
+    );
   }
 
-  getCompagnieName(compagnieId: number): string {
-    const compagnie = this.compagnies.find(c => c.id === compagnieId);
-    return compagnie ? compagnie.nom : '';
+  private handleHttpError(error: any): void {
+    if (error.status === 409) {
+      this.toastr.warning('Une assurance avec les mêmes attributs existe déjà.', 'Erreur de conflit');
+    } else if (error.status === 500) {
+      this.toastr.error("Erreur lors de l'enregistrement de l'assurance.", 'Erreur interne du serveur');
+    } else {
+      this.toastr.error("Une erreur inattendue s'est produite.", 'Erreur');
+    }
   }
 
-  getVehiculeName(vehiculeId: number): string {
-    const vehicule = this.vehicules.find(v => v.id === vehiculeId);
-    return vehicule ? vehicule.designation : '';
+  getCompagnieName(id: number): string {
+    const compagnie = this.compagnies.find((c) => c.idCompagnie === id);
+    return compagnie ? compagnie.nomCompagnie : '';
+  }
+
+  getVehiculeName(id: number): string {
+    const vehicule = this.vehicules.find((v) => v.idVehicule === id);
+    return vehicule ? vehicule.matriculeVehicule : '';
+  }
+
+  fetchAssuranceImage(assurance: Assurance): void {
+    this.imageService.fetchImage(assurance.cheminPolice).subscribe(
+      (response) => {
+        const blob = new Blob([response], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        this.pdfURL = url;
+      },
+      (error) => {
+        console.error('Error fetching assurance PDF:', error);
+      }
+    );
+  }
+
+  fetchAssurancesImage(assurance: Assurance): void {
+    this.imageService.fetchImage(assurance.cheminPolice).subscribe(
+      (response) => {
+        const blob = new Blob([response], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        this.assurancePDF[assurance.idAssurance] = url;
+      },
+      (error) => {
+        console.error('Error fetching assurance PDF:', error);
+      }
+    );
   }
 }

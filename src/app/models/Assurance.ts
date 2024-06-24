@@ -1,4 +1,5 @@
 import { Compagnie } from './Compagnie';
+import { Vehicule } from './Vehicule';
 
 export interface Assurance {
   idAssurance: number;
@@ -7,4 +8,5 @@ export interface Assurance {
   finGarantie: Date;
   cheminPolice: string;
   compagnie: Compagnie;
+  vehicule:Vehicule;
 }

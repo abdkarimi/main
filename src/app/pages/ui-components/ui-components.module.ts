@@ -51,6 +51,7 @@ import { ListAccidentComponent } from './accident/list-accident/list-accident.co
 import { ListAlerteComponent } from './alerte/list-alerte/list-alerte.component';
 import { ListInterventionComponent } from './intervention/list-intervention/list-intervention.component';
 import { ConsommationCarburantComponent } from './edition/consommation-carburant/consommation-carburant.component';
+import { ListTacheComponent } from './tache/list-tache/list-tache.component';
 
 
 @NgModule({
@@ -101,6 +102,7 @@ import { ConsommationCarburantComponent } from './edition/consommation-carburant
     ListAlerteComponent,
     ListInterventionComponent,
     ConsommationCarburantComponent,
+    ListTacheComponent,
 
   ],
 })

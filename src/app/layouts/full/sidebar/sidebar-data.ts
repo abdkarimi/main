@@ -137,6 +137,13 @@ export const navItems: NavItem[] = [
         route: '/ui-components/ListVehicule',
         roles: ['Admin', 'Agent'],
       },
+      {
+        displayName: 'Tache',
+        iconName: 'list-check',
+        iconColor: '#47a030',
+        route: '/ui-components/ListTache',
+        roles: ['Admin', 'Agent'],
+      },
     ],
   },
 
