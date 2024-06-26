@@ -20,39 +20,29 @@
       <div class="col-lg-12">
         <div class="table-responsive">
           <table mat-table [dataSource]="interventions" class="w-100">
-            <ng-container matColumnDef="objet">
+            <ng-container matColumnDef="objetIntervention">
               <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Objet</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.objet }}</td>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.objetIntervention }}</td>
             </ng-container>
 
-            <ng-container matColumnDef="date">
+            <ng-container matColumnDef="dateIntervention">
               <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.date | date: 'dd/MM/yyyy' }}</td>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateIntervention | date: 'dd/MM/yyyy' }}</td>
             </ng-container>
 
             <ng-container matColumnDef="typeIntervention">
               <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Type Intervention</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ getTypeInterventionName(element.typeIntervention) }}</td>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ getTypeInterventionName(element.typeIntervention.idTypeIntervention) }}</td>
             </ng-container>
 
-            <ng-container matColumnDef="montant">
-              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Montant</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.montant | currency:'EUR' }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="kilometrage">
+            <ng-container matColumnDef="kmIntervention">
               <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Kilométrage</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.kilometrage }}</td>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.kmIntervention }}</td>
             </ng-container>
 
             <ng-container matColumnDef="garage">
               <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Garage</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ getGarageName(element.garage) }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="serviceFait">
-              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Service Fait</th>
-              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.serviceFait }}</td>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ getGarageName(element.garage.idGarage) }}</td>
             </ng-container>
 
             <ng-container matColumnDef="actions">
@@ -91,13 +81,13 @@
             <div class="col">
               <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                 <mat-label>Objet</mat-label>
-                <input matInput formControlName="objet" />
+                <input matInput formControlName="objetIntervention" />
               </mat-form-field>
             </div>
             <div class="col">
               <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                 <mat-label>Date</mat-label>
-                <input matInput formControlName="date" [matDatepicker]="pickerDate" />
+                <input matInput formControlName="dateIntervention" [matDatepicker]="pickerDate" />
                 <mat-datepicker-toggle matSuffix [for]="pickerDate"></mat-datepicker-toggle>
                 <mat-datepicker #pickerDate></mat-datepicker>
               </mat-form-field>
@@ -107,62 +97,62 @@
             <div class="col">
               <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                 <mat-label>Type Intervention</mat-label>
-                <mat-select formControlName="typeIntervention">
-                  <mat-option *ngFor="let type of typesIntervention" [value]="type.id">
-                    {{ type.designation }}
+                <mat-select [formControl]="interventionForm.get('typeIntervention')?.get('idTypeIntervention')">
+                  <mat-option *ngFor="let type of typeInterventions" [value]="type.idTypeIntervention">
+                    {{ type.libelleTypeIntervention }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class="col">
-              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                <mat-label>Montant</mat-label>
-                <input matInput formControlName="montant" type="number" />
-              </mat-form-field>
-            </div>
-          </div>
-          <div class="row">
             <div class="col">
               <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                 <mat-label>Kilométrage</mat-label>
-                <input matInput formControlName="kilometrage" type="number" />
-              </mat-form-field>
-            </div>
-            <div class="col">
-              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                <mat-label>Garage</mat-label>
-                <mat-select formControlName="garage">
-                  <mat-option *ngFor="let garage of garages" [value]="garage.id">
-                    {{ garage.designation }}
-                  </mat-option>
-                </mat-select>
+                <input matInput formControlName="kmIntervention" type="number" />
               </mat-form-field>
             </div>
           </div>
           <div class="row">
             <div class="col">
               <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                <mat-label>Service Fait</mat-label>
-                <mat-select formControlName="serviceFait">
-                  <mat-option *ngFor="let status of serviceFaitOptions" [value]="status">
-                    {{ status }}
+                <mat-label>Garage</mat-label>
+                <mat-select [formControl]="interventionForm.get('garage')?.get('idGarage')">
+                  <mat-option *ngFor="let garage of garages" [value]="garage.idGarage">
+                    {{ garage.nomGarage }}
                   </mat-option>
                 </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                <mat-label>Véhicule</mat-label>
+                <mat-select [formControl]="interventionForm.get('vehicule')?.get('idVehicule')">
+                  <mat-option *ngFor="let vehicule of vehicules" [value]="vehicule.idVehicule">
+                    {{ vehicule.matriculeVehicule }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                <mat-label>Échéance</mat-label>
+                <input matInput formControlName="echeanceIntervention" [matDatepicker]="pickerEcheance" />
+                <mat-datepicker-toggle matSuffix [for]="pickerEcheance"></mat-datepicker-toggle>
+                <mat-datepicker #pickerEcheance></mat-datepicker>
               </mat-form-field>
             </div>
           </div>
           <div class="row">
             <div class="col">
               <h3>Tâches</h3>
-              <div formArrayName="taches" *ngFor="let tache of taches.controls; let i=index">
+              <div formArrayName="taches" *ngFor="let tacheCtrl of tachesFormArray.controls; let i=index">
                 <div [formGroupName]="i" class="mb-3">
                   <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
                     <mat-label>Tâche</mat-label>
-                    <input matInput formControlName="tache" />
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                    <mat-label>Détail</mat-label>
-                    <input matInput formControlName="detail" />
+                    <mat-select formControlName="idTache">
+                      <mat-option *ngFor="let tache of taches" [value]="tache.idTache">
+                        {{ tache.libelleTache }}
+                      </mat-option>
+                    </mat-select>
                   </mat-form-field>
                   <button mat-icon-button color="warn" (click)="supprimerTache(i)">
                     <mat-icon>delete</mat-icon>
@@ -189,28 +179,23 @@
       <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Détails de l'Intervention</h2>
       <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
         <div *ngIf="selectedIntervention">
-          <p><strong>Objet:</strong> {{ selectedIntervention.objet }}</p>
-          <p><strong>Date:</strong> {{ selectedIntervention.date | date: 'dd/MM/yyyy' }}</p>
-          <p><strong>Type Intervention:</strong> {{ getTypeInterventionName(selectedIntervention.typeIntervention) }}</p>
-          <p><strong>Montant:</strong> {{ selectedIntervention.montant | currency:'EUR' }}</p>
-          <p><strong>Kilométrage:</strong> {{ selectedIntervention.kilometrage }}</p>
-          <p><strong>Garage:</strong> {{ getGarageName(selectedIntervention.garage) }}</p>
-          <p><strong>Service Fait:</strong> {{ selectedIntervention.serviceFait }}</p>
+          <p><strong>Objet:</strong> {{ selectedIntervention.objetIntervention }}</p>
+          <p><strong>Date:</strong> {{ selectedIntervention.dateIntervention | date: 'dd/MM/yyyy' }}</p>
+          <p><strong>Type Intervention:</strong> {{ getTypeInterventionName(selectedIntervention.typeIntervention.idTypeIntervention) }}</p>
+          <p><strong>Kilométrage:</strong> {{ selectedIntervention.kmIntervention }}</p>
+          <p><strong>Garage:</strong> {{ getGarageName(selectedIntervention.garage.idGarage) }}</p>
+          <p><strong>Véhicule:</strong> {{ getVehiculeName(selectedIntervention.vehicule.idVehicule) }}</p>
+          <p><strong>Échéance:</strong> {{ selectedIntervention.echeanceIntervention | date: 'dd/MM/yyyy' }}</p>
           
           <h3>Tâches</h3>
           <table mat-table [dataSource]="selectedIntervention.taches" class="w-100">
-            <ng-container matColumnDef="tache">
+            <ng-container matColumnDef="libelleTache">
               <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Tâche</th>
-              <td mat-cell *matCellDef="let tache" class="mat-body-1">{{ tache.tache }}</td>
+              <td mat-cell *matCellDef="let tache" class="mat-body-1">{{ tache.libelleTache }}</td>
             </ng-container>
 
-            <ng-container matColumnDef="detail">
-              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Détail</th>
-              <td mat-cell *matCellDef="let tache" class="mat-body-1">{{ tache.detail }}</td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="['tache', 'detail']"></tr>
-            <tr mat-row *matRowDef="let row; columns: ['tache', 'detail'];"></tr>
+            <tr mat-header-row *matHeaderRowDef="['libelleTache']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['libelleTache'];"></tr>
           </table>
         </div>
       </mat-dialog-content>
@@ -226,7 +211,7 @@
   <div class="mdc-dialog__container">
     <div class="mat-mdc-dialog-surface mdc-dialog__surface">
       <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Supprimer</h2>
-      <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{ selectedIntervention?.objet }}</span>?</div>
+      <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{ selectedIntervention?.objetIntervention }}</span>?</div>
       <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
         <button mat-flat-button color="warn" (click)="dialogRef.close()">Annuler</button>
         <button mat-flat-button color="primary" (click)="confirmerSuppression()">Supprimer</button>

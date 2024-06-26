@@ -1,158 +1,165 @@
 <mat-card class="cardWithShadow theme-card">
     <mat-card-header>
-        <div class="d-flex justify-content-between w-100">
-            <mat-card-title class="m-b-0 text-right">Alerte</mat-card-title>
-            <button mat-raised-button color="primary" (click)="ouvrirDialogAjout()">Nouveau</button>
-        </div>
+      <div class="d-flex justify-content-between w-100">
+        <mat-card-title class="m-b-0 text-right">Alerte</mat-card-title>
+        <button mat-raised-button color="primary" (click)="ouvrirDialogAjout()">Nouveau</button>
+      </div>
     </mat-card-header>
     <mat-card-content class="b-t-1">
-        <div class="row">
-            <div class="col-lg-8">
-                <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
-                    <input matInput placeholder="Recherche" />
-                    <mat-icon matSuffix role="img">
-                        <i-tabler name="search" class="icon-20"></i-tabler>
-                    </mat-icon>
-                </mat-form-field>
-            </div>
+      <div class="row">
+        <div class="col-lg-8">
+          <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
+            <input matInput placeholder="Recherche" />
+            <mat-icon matSuffix role="img">
+              <i-tabler name="search" class="icon-20"></i-tabler>
+            </mat-icon>
+          </mat-form-field>
         </div>
-        <div class="row ">
-            <div class="col-lg-12">
-                <div class="table-responsive">
-                    <table mat-table [dataSource]="alertes" class="w-100">
-                        <ng-container matColumnDef="id">
-                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">ID</th>
-                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.id }}</td>
-                        </ng-container>
-
-                        <ng-container matColumnDef="description">
-                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Description</th>
-                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.description }}</td>
-                        </ng-container>
-
-                        <ng-container matColumnDef="vehicule">
-                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Véhicule</th>
-                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ getVehiculeName(element.vehicule) }}</td>
-                        </ng-container>
-
-                        <ng-container matColumnDef="kilometrageAlerte">
-                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Kilométrage Alerte</th>
-                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.kilometrageAlerte }}</td>
-                        </ng-container>
-
-                        <ng-container matColumnDef="dateAlerte">
-                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date Alerte</th>
-                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateAlerte | date: 'dd/MM/yyyy' }}</td>
-                        </ng-container>
-
-                        <ng-container matColumnDef="statut">
-                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Statut</th>
-                            <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.statut }}</td>
-                        </ng-container>
-
-                        <ng-container matColumnDef="actions">
-                            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Actions</th>
-                            <td mat-cell *matCellDef="let element" class="mat-body-1">
-                                <button mat-icon-button color="accent" (click)="ouvrirDialogModification(element)">
-                                    <mat-icon>edit</mat-icon>
-                                </button>
-                                <button mat-icon-button color="warn" (click)="ouvrirDialogSuppression(element)">
-                                    <mat-icon>delete</mat-icon>
-                                </button>
-                            </td>
-                        </ng-container>
-
-                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                    </table>
-                    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Sélectionner la page des alertes"></mat-paginator>
-                </div>
-            </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="table-responsive">
+            <table mat-table [dataSource]="alertes" class="w-100">
+              <ng-container matColumnDef="idAlerte">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">ID</th>
+                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.idAlerte }}</td>
+              </ng-container>
+  
+              <ng-container matColumnDef="descriptionAlerte">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Description</th>
+                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.descriptionAlerte }}</td>
+              </ng-container>
+  
+              <ng-container matColumnDef="vehicule">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Véhicule</th>
+                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ getVehiculeName(element.vehicule.idVehicule) }}</td>
+              </ng-container>
+  
+              <ng-container matColumnDef="kmAlerte">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Kilométrage Alerte</th>
+                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.kmAlerte }}</td>
+              </ng-container>
+  
+              <ng-container matColumnDef="declencheAlerte">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Déclenchement</th>
+                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.declencheAlerte }}</td>
+              </ng-container>
+  
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Status</th>
+                <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.status }}</td>
+              </ng-container>
+  
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Actions</th>
+                <td mat-cell *matCellDef="let element" class="mat-body-1">
+                  <button mat-icon-button color="accent" (click)="ouvrirDialogModification(element)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="ouvrirDialogSuppression(element)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+  
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+            <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Sélectionner la page des alertes"></mat-paginator>
+          </div>
         </div>
+      </div>
     </mat-card-content>
-</mat-card>
-
-<!-- Dialog pour Ajouter/Modifier une Alerte -->
-<ng-template #dialogAjoutModification let-dialogRef>
+  </mat-card>
+  
+  <!-- Dialog pour Ajouter/Modifier une Alerte -->
+  <ng-template #dialogAjoutModification let-dialogRef>
     <div class="mdc-dialog__container">
-        <div class="mat-mdc-dialog-surface mdc-dialog__surface">
-            <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Alerte' : 'Ajouter Alerte' }}</h2>
-            <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
-                <form [formGroup]="alerteForm">
-                    <div class="row">
-                        <div class="col">
-                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                                <mat-label>ID</mat-label>
-                                <input matInput formControlName="id" type="number" disabled />
-                            </mat-form-field>
-                        </div>
-                        <div class="col">
-                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                                <mat-label>Description</mat-label>
-                                <input matInput formControlName="description" />
-                            </mat-form-field>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                                <mat-label>Véhicule</mat-label>
-                                <mat-select formControlName="vehicule">
-                                    <mat-option *ngFor="let vehicule of vehicules" [value]="vehicule.id">
-                                        {{ vehicule.designation }}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                                <mat-label>Kilométrage Alerte</mat-label>
-                                <input matInput formControlName="kilometrageAlerte" type="number" />
-                            </mat-form-field>
-                        </div>
-                        <div class="col">
-                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                                <mat-label>Date Alerte</mat-label>
-                                <input matInput formControlName="dateAlerte" [matDatepicker]="pickerDateAlerte" />
-                                <mat-datepicker-toggle matSuffix [for]="pickerDateAlerte"></mat-datepicker-toggle>
-                                <mat-datepicker #pickerDateAlerte></mat-datepicker>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
-                                <mat-label>Statut</mat-label>
-                                <mat-select formControlName="statut">
-                                    <mat-option *ngFor="let statut of statuts" [value]="statut">
-                                        {{ statut }}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                </form>
-            </mat-dialog-content>
-            <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
-                <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
-                <button mat-flat-button color="primary" (click)="sauvegarderAlerte()">{{ isEdit ? 'Modifier' : 'Ajouter' }}</button>
-            </mat-dialog-actions>
-        </div>
-    </div>
-</ng-template>
-
-<!-- Dialog de Confirmation de Suppression -->
-<ng-template #dialogSuppression let-dialogRef>
-    <div class="mdc-dialog__container">
-        <div class="mat-mdc-dialog-surface mdc-dialog__surface">
-            <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Supprimer</h2>
-            <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer l'alerte avec l'ID <span class="f-w-600">{{ selectedAlerte?.id }}</span>?</div>
-            <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
-                <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
-                <button mat-flat-button color="primary" (click)="confirmerSuppression()">Supprimer</button>
+      <div class="mat-mdc-dialog-surface mdc-dialog__surface">
+        <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Alerte' : 'Ajouter Alerte' }}</h2>
+        <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
+          <form [formGroup]="alerteForm">
+            <div class="row">
+              <div class="col">
+                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                  <mat-label>Description</mat-label>
+                  <input matInput formControlName="descriptionAlerte" />
+                  <mat-error *ngIf="alerteForm.get('descriptionAlerte').invalid && alerteForm.get('descriptionAlerte').touched">
+                    Description est requise.
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col">
+                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                  <mat-label>Status</mat-label>
+                  <mat-select formControlName="status">
+                    <mat-option *ngFor="let statut of statuts" [value]="statut">
+                      {{ statut }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="alerteForm.get('status').invalid && alerteForm.get('status').touched">
+                    Statut est requis.
+                  </mat-error>
+                </mat-form-field>
+              </div>
             </div>
-        </div>
+            <div class="row">
+              <div class="col">
+                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                  <mat-label>Véhicule</mat-label>
+                  <mat-select [formControl]="alerteForm.get('vehicule')?.get('idVehicule')">
+                    <mat-option *ngFor="let vehicule of vehicules" [value]="vehicule.idVehicule">
+                      {{ vehicule.matriculeVehicule }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="alerteForm.get('vehicule.idVehicule').invalid && alerteForm.get('vehicule.idVehicule').touched">
+                    Véhicule est requis.
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                  <mat-label>Kilométrage Alerte</mat-label>
+                  <input matInput formControlName="kmAlerte" type="number" />
+                  <mat-error *ngIf="alerteForm.get('kmAlerte').invalid && alerteForm.get('kmAlerte').touched">
+                    Kilométrage est requis.
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col">
+                <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                  <mat-label>Date Alerte</mat-label>
+                  <input matInput formControlName="declencheAlerte" [matDatepicker]="pickerDateAlerte" />
+                  <mat-datepicker-toggle matSuffix [for]="pickerDateAlerte"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerDateAlerte></mat-datepicker>
+                  <mat-error *ngIf="alerteForm.get('declencheAlerte').invalid && alerteForm.get('declencheAlerte').touched">
+                    Date d'alerte est requise.
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+          </form>
+        </mat-dialog-content>
+        <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
+          <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
+          <button mat-flat-button color="primary" (click)="sauvegarderAlerte()">{{ isEdit ? 'Modifier' : 'Ajouter' }}</button>
+        </mat-dialog-actions>
+      </div>
     </div>
-</ng-template>
+  </ng-template>
+  
+  <!-- Dialog de Confirmation de Suppression -->
+  <ng-template #dialogSuppression let-dialogRef>
+    <div class="mdc-dialog__container">
+      <div class="mat-mdc-dialog-surface mdc-dialog__surface">
+        <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Supprimer</h2>
+        <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer l'alerte avec l'ID <span class="f-w-600">{{ selectedAlerte?.idAlerte }}</span>?</div>
+        <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
+          <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
+          <button mat-flat-button color="primary" (click)="confirmerSuppression()">Supprimer</button>
+        </div>
+      </div>
+    </div>
+  </ng-template>

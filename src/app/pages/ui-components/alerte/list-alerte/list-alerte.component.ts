@@ -1,20 +1,12 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
-interface Alerte {
-  id: number;
-  description: string;
-  vehicule: number;
-  kilometrageAlerte: number;
-  dateAlerte: Date;
-  statut: string;
-}
-
-interface Vehicule {
-  id: number;
-  designation: string;
-}
+import { Alerte } from 'src/app/models/Alerte';
+import { Vehicule } from 'src/app/models/Vehicule';
+import { AlertService } from 'src/app/services/Alert/alert.service';
+import { VehiculeService } from 'src/app/services/Vehicule/vehicule.service';
 
 @Component({
   selector: 'app-list-alerte',
@@ -22,62 +14,54 @@ interface Vehicule {
   styleUrls: ['./list-alerte.component.scss'],
 })
 export class ListAlerteComponent implements OnInit {
-  @ViewChild('dialogAjoutModification')
-  dialogAjoutModification: TemplateRef<any>;
+  @ViewChild('dialogAjoutModification') dialogAjoutModification: TemplateRef<any>;
   @ViewChild('dialogSuppression') dialogSuppression: TemplateRef<any>;
 
   displayedColumns: string[] = [
-    'id',
-    'description',
+    'idAlerte',
+    'descriptionAlerte',
     'vehicule',
-    'kilometrageAlerte',
-    'dateAlerte',
-    'statut',
+    'kmAlerte',
+    'declencheAlerte',
+    'status',
     'actions',
   ];
 
-  alertes: Alerte[] = [
-    {
-      id: 1,
-      description: 'Changement de pneu',
-      vehicule: 1,
-      kilometrageAlerte: 50000,
-      dateAlerte: new Date('2023-01-01'),
-      statut: 'Activer',
-    },
-    {
-      id: 2,
-      description: 'Vidange',
-      vehicule: 2,
-      kilometrageAlerte: 10000,
-      dateAlerte: new Date('2023-05-15'),
-      statut: 'Desactiver',
-    },
-  ];
-
-  vehicules: Vehicule[] = [
-    { id: 1, designation: 'Peugeot 208' },
-    { id: 2, designation: 'Renault Clio' },
-  ];
-
+  alertes: Alerte[] = [];
+  vehicules: Vehicule[] = [];
   statuts: string[] = ['Activer', 'Desactiver'];
 
   selectedAlerte: Alerte;
   isEdit: boolean = false;
   alerteForm: FormGroup;
 
-  constructor(public dialog: MatDialog, private fb: FormBuilder) {
+  constructor(
+    private alertService: AlertService,
+    public dialog: MatDialog,
+    private fb: FormBuilder,
+    private vehiculeService: VehiculeService,
+    private toastr: ToastrService,
+  ) {
     this.alerteForm = this.fb.group({
-      id: [{ value: '', disabled: true }],
-      description: [''],
-      vehicule: [''],
-      kilometrageAlerte: [''],
-      dateAlerte: [''],
-      statut: [''],
+      idAlerte: [{ value: '', disabled: true }],
+      descriptionAlerte: ['', Validators.required],
+      vehicule: this.fb.group({
+        idVehicule: ['', Validators.required],
+      }),
+      kmAlerte: ['', Validators.required],
+      declencheAlerte: ['', Validators.required],
+      status: ['', Validators.required],
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+  loadData(): void {
+    this.alertService.getAllAlertes().subscribe((data) => {this.alertes = data;});
+    this.vehiculeService.getAllVehicules().subscribe((data) => (this.vehicules = data));
+  }
 
   ouvrirDialogAjout(): void {
     this.isEdit = false;
@@ -103,13 +87,34 @@ export class ListAlerteComponent implements OnInit {
   }
 
   sauvegarderAlerte(): void {
+    if (this.alerteForm.invalid) {
+      this.toastr.warning('Veuillez corriger les erreurs du formulaire avant de soumettre.', 'Validation échouée');
+      return;
+    }
     const alerteData = this.alerteForm.getRawValue();
     if (this.isEdit) {
-      Object.assign(this.selectedAlerte, alerteData);
+      this.alertService.updateAlerte(this.selectedAlerte.idAlerte, alerteData).subscribe(
+        () => {
+          this.loadData();
+          this.fermerDialog();
+          this.toastr.success('Alerte modifiée avec succès.', 'Succès');
+        },
+        (error) => {
+          this.handleHttpError(error);
+        }
+      );
     } else {
-      this.alertes.push(alerteData);
+      this.alertService.createAlerte(alerteData).subscribe(
+        () => {
+          this.loadData();
+          this.fermerDialog();
+          this.toastr.success('Alerte ajoutée avec succès.', 'Succès');
+        },
+        (error) => {
+          this.handleHttpError(error);
+        }
+      );
     }
-    this.dialog.closeAll();
   }
 
   ouvrirDialogSuppression(alerte: Alerte): void {
@@ -127,12 +132,30 @@ export class ListAlerteComponent implements OnInit {
   }
 
   confirmerSuppression(): void {
-    this.alertes = this.alertes.filter((a) => a !== this.selectedAlerte);
-    this.fermerDialog();
+    this.alertService.deleteAlerte(this.selectedAlerte.idAlerte).subscribe(
+      () => {
+        this.alertes = this.alertes.filter((a) => a !== this.selectedAlerte);
+        this.fermerDialog();
+        this.toastr.success('Alerte supprimée avec succès.', 'Succès');
+      },
+      (error) => {
+        this.handleHttpError(error);
+      }
+    );
+  }
+
+  private handleHttpError(error: any): void {
+    if (error.status === 409) {
+      this.toastr.warning('Une alerte avec les mêmes attributs existe déjà.', 'Erreur de conflit');
+    } else if (error.status === 500) {
+      this.toastr.error("Erreur lors de l'enregistrement de l'alerte.", 'Erreur interne du serveur');
+    } else {
+      this.toastr.error("Une erreur inattendue s'est produite.", 'Erreur');
+    }
   }
 
   getVehiculeName(vehiculeId: number): string {
-    const vehicule = this.vehicules.find((v) => v.id === vehiculeId);
-    return vehicule ? vehicule.designation : '';
+    const vehicule = this.vehicules.find((v) => v.idVehicule === vehiculeId);
+    return vehicule ? vehicule.matriculeVehicule : '';
   }
 }

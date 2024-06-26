@@ -1,32 +1,19 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import { InterventionService } from 'src/app/services/Intervention/intervention.service';
+import { VehiculeService } from 'src/app/services/Vehicule/vehicule.service';
 
-interface Tache {
-  tache: string;
-  detail: string;
-}
+import { Intervention } from 'src/app/models/Intervention';
+import { Vehicule } from 'src/app/models/Vehicule';
 
-interface Intervention {
-  objet: string;
-  date: Date;
-  typeIntervention: number;
-  montant: number;
-  kilometrage: number;
-  garage: number;
-  serviceFait: string;
-  taches: Tache[];
-}
-
-interface TypeIntervention {
-  id: number;
-  designation: string;
-}
-
-interface Garage {
-  id: number;
-  designation: string;
-}
+import { Tache } from 'src/app/models/Tache';
+import { TinterventionService } from 'src/app/services/TIntervention/tintervention.service';
+import { TIntervention } from 'src/app/models/TIntervention';
+import { Garage } from 'src/app/models/garage';
+import { GarageService } from 'src/app/services/garage/garage.service';
+import { TacheService } from 'src/app/services/tache/tache.service';
 
 @Component({
   selector: 'app-list-intervention',
@@ -34,107 +21,90 @@ interface Garage {
   styleUrls: ['./list-intervention.component.scss'],
 })
 export class ListInterventionComponent implements OnInit {
-  @ViewChild('dialogAjoutModification')
-  dialogAjoutModification: TemplateRef<any>;
+  @ViewChild('dialogAjoutModification') dialogAjoutModification: TemplateRef<any>;
   @ViewChild('dialogSuppression') dialogSuppression: TemplateRef<any>;
   @ViewChild('dialogDetails') dialogDetails: TemplateRef<any>;
 
   displayedColumns: string[] = [
-    'objet',
-    'date',
+    'objetIntervention',
+    'dateIntervention',
     'typeIntervention',
-    'montant',
-    'kilometrage',
+    'kmIntervention',
     'garage',
-    'serviceFait',
     'actions',
   ];
-  interventions: Intervention[] = [
-    {
-      objet: 'Révision complète',
-      date: new Date('2023-06-01'),
-      typeIntervention: 1,
-      montant: 1500,
-      kilometrage: 10000,
-      garage: 1,
-      serviceFait: 'Oui',
-      taches: [
-        { tache: 'Vidange', detail: "Changement d'huile et filtre à huile" },
-        { tache: 'Pneus', detail: 'Remplacement des pneus avant' },
-      ],
-    },
-    {
-      objet: 'Réparation frein',
-      date: new Date('2023-07-15'),
-      typeIntervention: 2,
-      montant: 200,
-      kilometrage: 5000,
-      garage: 2,
-      serviceFait: 'Non',
-      taches: [
-        {
-          tache: 'Plaquettes de frein',
-          detail: 'Changement des plaquettes de frein avant',
-        },
-        {
-          tache: 'Disques de frein',
-          detail: 'Changement des disques de frein arrière',
-        },
-      ],
-    },
-  ];
-
-  typesIntervention: TypeIntervention[] = [
-    { id: 1, designation: 'Révision' },
-    { id: 2, designation: 'Réparation' },
-  ];
-
-  garages: Garage[] = [
-    { id: 1, designation: 'Garage A' },
-    { id: 2, designation: 'Garage B' },
-  ];
-
-  serviceFaitOptions: string[] = ['Encours', 'Oui', 'Non'];
+  interventions: Intervention[] = [];
+  vehicules: Vehicule[] = [];
+  typeInterventions: TIntervention[] = [];
+  garages: Garage[] = [];
+  taches: Tache[] = [];
 
   selectedIntervention: Intervention;
   isEdit: boolean = false;
   interventionForm: FormGroup;
 
-  constructor(public dialog: MatDialog, private fb: FormBuilder) {
+  constructor(
+    private interventionService: InterventionService,
+    private vehiculeService: VehiculeService,
+    private typeInterventionService: TinterventionService,
+    private garageService: GarageService,
+    private tacheService: TacheService,
+    private toastr: ToastrService,
+    public dialog: MatDialog,
+    private fb: FormBuilder
+  ) {
     this.interventionForm = this.fb.group({
-      objet: [''],
-      date: [''],
-      typeIntervention: [''],
-      montant: [''],
-      kilometrage: [''],
-      garage: [''],
-      serviceFait: [''],
-      taches: this.fb.array([]),
+      idIntervention: 0,
+      objetIntervention: ['', Validators.required],
+      dateIntervention: ['', Validators.required],
+      echeanceIntervention: ['', Validators.required],
+      kmIntervention: ['', Validators.required],
+      vehicule: this.fb.group({
+        idVehicule: ['', Validators.required],
+      }),
+      typeIntervention: this.fb.group({
+        idTypeIntervention: ['', Validators.required],
+      }),
+      garage: this.fb.group({
+        idGarage: ['', Validators.required],
+      }),
+      taches: this.fb.array([], Validators.required)
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadData();
+  }
 
-  get taches(): FormArray {
+  loadData(): void {
+    this.interventionService.getAllInterventions().subscribe((data) => {
+      this.interventions = data;
+    });
+    this.vehiculeService.getAllVehicules().subscribe((data) => (this.vehicules = data));
+    this.typeInterventionService.getAllTypeInterventions().subscribe((data) => (this.typeInterventions = data));
+    this.garageService.getAllGarages().subscribe((data) => (this.garages = data));
+    this.tacheService.getAllTaches().subscribe((data) => (this.taches = data));
+  }
+
+  get tachesFormArray(): FormArray {
     return this.interventionForm.get('taches') as FormArray;
   }
 
   ajouterTache(): void {
     const tacheFormGroup = this.fb.group({
-      tache: [''],
-      detail: [''],
+      idTache: ['', Validators.required]
     });
-    this.taches.push(tacheFormGroup);
+    this.tachesFormArray.push(tacheFormGroup);
   }
 
   supprimerTache(index: number): void {
-    this.taches.removeAt(index);
+    this.tachesFormArray.removeAt(index);
   }
 
   ouvrirDialogAjout(): void {
     this.isEdit = false;
     this.interventionForm.reset();
-    this.taches.clear();
+    this.tachesFormArray.clear();
     this.dialog.open(this.dialogAjoutModification, {
       width: '800px',
       autoFocus: false,
@@ -147,35 +117,15 @@ export class ListInterventionComponent implements OnInit {
     this.isEdit = true;
     this.selectedIntervention = intervention;
     this.interventionForm.patchValue(intervention);
-    this.taches.clear();
+    this.tachesFormArray.clear();
     intervention.taches.forEach((tache) => {
       const tacheFormGroup = this.fb.group({
-        tache: [tache.tache],
-        detail: [tache.detail],
+        idTache: [tache.idTache, Validators.required]
       });
-      this.taches.push(tacheFormGroup);
+      this.tachesFormArray.push(tacheFormGroup);
     });
     this.dialog.open(this.dialogAjoutModification, {
       width: '800px',
-      autoFocus: false,
-      enterAnimationDuration: '100ms',
-      exitAnimationDuration: '100ms',
-    });
-  }
-
-  sauvegarderIntervention(): void {
-    if (this.isEdit) {
-      Object.assign(this.selectedIntervention, this.interventionForm.value);
-    } else {
-      this.interventions.push(this.interventionForm.value);
-    }
-    this.dialog.closeAll();
-  }
-
-  ouvrirDialogSuppression(intervention: Intervention): void {
-    this.selectedIntervention = intervention;
-    this.dialog.open(this.dialogSuppression, {
-      width: '400px',
       autoFocus: false,
       enterAnimationDuration: '100ms',
       exitAnimationDuration: '100ms',
@@ -192,26 +142,92 @@ export class ListInterventionComponent implements OnInit {
     });
   }
 
+  sauvegarderIntervention(): void {
+    if (this.interventionForm.invalid) {
+      this.toastr.warning('Veuillez corriger les erreurs du formulaire avant de soumettre.', 'Validation échouée');
+      return;
+    }
+    if (this.isEdit) {
+      this.interventionService.updateIntervention(this.selectedIntervention.idIntervention, this.interventionForm.value).subscribe(
+        () => {
+          this.loadData();
+          this.fermerDialog();
+          this.interventionForm.reset();
+          this.toastr.success('Intervention modifiée avec succès.', 'Succès');
+        },
+        (error) => {
+          this.handleHttpError(error);
+        }
+      );
+    } else {
+      this.interventionService.createIntervention(this.interventionForm.value).subscribe(
+        () => {
+          this.loadData();
+          this.fermerDialog();
+          this.interventionForm.reset();
+          this.toastr.success('Intervention ajoutée avec succès.', 'Succès');
+        },
+        (error) => {
+          this.handleHttpError(error);
+        }
+      );
+    }
+  }
+
+  ouvrirDialogSuppression(intervention: Intervention): void {
+    this.selectedIntervention = intervention;
+    this.dialog.open(this.dialogSuppression, {
+      width: '400px',
+      autoFocus: false,
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '100ms',
+    });
+  }
+
   fermerDialog(): void {
     this.dialog.closeAll();
   }
 
   confirmerSuppression(): void {
-    this.interventions = this.interventions.filter(
-      (i) => i !== this.selectedIntervention
+    this.interventionService.deleteIntervention(this.selectedIntervention.idIntervention).subscribe(
+      () => {
+        this.interventions = this.interventions.filter((i) => i !== this.selectedIntervention);
+        this.fermerDialog();
+        this.toastr.success('Intervention supprimée avec succès.', 'Succès');
+      },
+      (error) => {
+        this.handleHttpError(error);
+      }
     );
-    this.fermerDialog();
   }
 
-  getTypeInterventionName(typeInterventionId: number): string {
-    const type = this.typesIntervention.find(
-      (t) => t.id === typeInterventionId
-    );
-    return type ? type.designation : '';
+  private handleHttpError(error: any): void {
+    if (error.status === 409) {
+      this.toastr.warning('Une intervention avec les mêmes attributs existe déjà.', 'Erreur de conflit');
+    } else if (error.status === 500) {
+      this.toastr.error("Erreur lors de l'enregistrement de l'intervention.", 'Erreur interne du serveur');
+    } else {
+      this.toastr.error("Une erreur inattendue s'est produite.", 'Erreur');
+    }
   }
 
-  getGarageName(garageId: number): string {
-    const garage = this.garages.find((g) => g.id === garageId);
-    return garage ? garage.designation : '';
+  getVehiculeName(id: number): string {
+    const vehicule = this.vehicules.find((v) => v.idVehicule === id);
+    return vehicule ? vehicule.matriculeVehicule : '';
+  }
+
+  getTypeInterventionName(id: number): string {
+    const typeIntervention = this.typeInterventions.find((ti) => ti.idTypeIntervention === id);
+    return typeIntervention ? typeIntervention.libelleTypeIntervention : '';
+  }
+
+  getGarageName(id: number): string {
+    const garage = this.garages.find((g) => g.idGarage === id);
+    return garage ? garage.nomGarage : '';
+  }
+
+  getTacheName(id: number): string {
+    const tache = this.taches.find((t) => t.idTache === id);
+    return tache ? tache.libelleTache : '';
   }
 }
