@@ -1,12 +1,17 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormControl,
+} from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { Garage } from 'src/app/models/garage';
-import { GarageService } from 'src/app/services/garage/garage.service';
 
+import { GarageService } from 'src/app/services/garage/garage.service';
+import { Garage } from 'src/app/models/garage';
 
 @Component({
   selector: 'app-list-garage',
@@ -14,7 +19,8 @@ import { GarageService } from 'src/app/services/garage/garage.service';
   styleUrls: ['./list-garage.component.scss'],
 })
 export class ListGarageComponent implements OnInit {
-  @ViewChild('dialogAjoutModification') dialogAjoutModification: TemplateRef<any>;
+  @ViewChild('dialogAjoutModification')
+  dialogAjoutModification: TemplateRef<any>;
   @ViewChild('dialogSuppression') dialogSuppression: TemplateRef<any>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -23,7 +29,6 @@ export class ListGarageComponent implements OnInit {
     'adresseGarage',
     'telGarage',
     'emailGarage',
-    'faxGarage',
     'nomResponsableG',
     'gsmGarage',
     'actions',
@@ -46,7 +51,6 @@ export class ListGarageComponent implements OnInit {
       adresseGarage: ['', Validators.required],
       telGarage: ['', Validators.required],
       emailGarage: ['', [Validators.required, Validators.email]],
-      faxGarage: [''],
       nomResponsableG: ['', Validators.required],
       gsmGarage: ['', Validators.required],
     });
@@ -54,7 +58,9 @@ export class ListGarageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadGarages();
-    this.searchControl.valueChanges.subscribe(value => this.applyFilter(value));
+    this.searchControl.valueChanges.subscribe((value) =>
+      this.applyFilter(value)
+    );
   }
 
   loadGarages() {
@@ -98,28 +104,42 @@ export class ListGarageComponent implements OnInit {
 
   sauvegarderGarage(): void {
     if (this.garageForm.invalid) {
-      this.toastr.error('Veuillez remplir correctement le formulaire', 'Erreur');
+      this.toastr.error(
+        'Veuillez remplir correctement le formulaire',
+        'Erreur'
+      );
       return;
     }
 
     const garage = this.garageForm.getRawValue();
 
     if (this.isEdit) {
-      this.garageService.updateGarage(this.selectedGarage.idGarage, garage).subscribe(() => {
-        this.toastr.success('Garage mis à jour avec succès', 'Succès');
-        this.loadGarages();
-        this.dialog.closeAll();
-      }, () => {
-        this.toastr.error('Erreur lors de la mise à jour du garage', 'Erreur');
-      });
+      this.garageService
+        .updateGarage(this.selectedGarage.idGarage, garage)
+        .subscribe(
+          () => {
+            this.toastr.success('Garage mis à jour avec succès', 'Succès');
+            this.loadGarages();
+            this.dialog.closeAll();
+          },
+          () => {
+            this.toastr.error(
+              'Erreur lors de la mise à jour du garage',
+              'Erreur'
+            );
+          }
+        );
     } else {
-      this.garageService.createGarage(garage).subscribe(() => {
-        this.toastr.success('Garage ajouté avec succès', 'Succès');
-        this.loadGarages();
-        this.dialog.closeAll();
-      }, () => {
-        this.toastr.error('Erreur lors de l\'ajout du garage', 'Erreur');
-      });
+      this.garageService.createGarage(garage).subscribe(
+        () => {
+          this.toastr.success('Garage ajouté avec succès', 'Succès');
+          this.loadGarages();
+          this.dialog.closeAll();
+        },
+        () => {
+          this.toastr.error("Erreur lors de l'ajout du garage", 'Erreur');
+        }
+      );
     }
   }
 
@@ -138,12 +158,15 @@ export class ListGarageComponent implements OnInit {
   }
 
   confirmerSuppression(): void {
-    this.garageService.deleteGarage(this.selectedGarage.idGarage).subscribe(() => {
-      this.toastr.success('Garage supprimé avec succès', 'Succès');
-      this.loadGarages();
-      this.fermerDialog();
-    }, () => {
-      this.toastr.error('Erreur lors de la suppression du garage', 'Erreur');
-    });
+    this.garageService.deleteGarage(this.selectedGarage.idGarage).subscribe(
+      () => {
+        this.toastr.success('Garage supprimé avec succès', 'Succès');
+        this.loadGarages();
+        this.fermerDialog();
+      },
+      () => {
+        this.toastr.error('Erreur lors de la suppression du garage', 'Erreur');
+      }
+    );
   }
 }
