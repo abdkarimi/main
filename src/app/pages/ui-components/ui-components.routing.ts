@@ -40,16 +40,17 @@ import { ListAlerteComponent } from './alerte/list-alerte/list-alerte.component'
 import { ListInterventionComponent } from './intervention/list-intervention/list-intervention.component';
 import { ConsommationCarburantComponent } from './edition/consommation-carburant/consommation-carburant.component';
 import { ListTacheComponent } from './tache/list-tache/list-tache.component';
+import { ListOrdreMissionComponent } from './ordremission/list-ordre-mission/list-ordre-mission.component';
 
 export const UiComponentsRoutes: Routes = [
   {
     path: '',
     children: [
       {
-        path: 'SaisirA',
-        component: AsaisirComponent,
-        canActivate: [AuthorizationGuard], // Add canActivate property with AuthorizationGuard
-        data: { roles: ['Admin', 'Agent'] },
+        path: 'SaisirO',
+        component: ListOrdreMissionComponent,
+        // canActivate: [AuthorizationGuard], // Add canActivate property with AuthorizationGuard
+        // data: { roles: ['Admin', 'Agent'] },
       },
       {
         path: 'ModifierA',

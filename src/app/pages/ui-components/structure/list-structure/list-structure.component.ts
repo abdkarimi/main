@@ -5,6 +5,8 @@ import { Structure } from 'src/app/models/Structure';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { StructureService } from 'src/app/services/Structure/structure.service';
+import { AgentService } from 'src/app/services/Agent/agent.service';
+import { Utilisateur } from 'src/app/models/Utilisateur';
 
 @Component({
   selector: 'app-list-structure',
@@ -22,11 +24,12 @@ export class ListStructureComponent implements OnInit {
   selectedStructure: Structure;
   isEdit: boolean = false;
   structureForm: FormGroup;
-
+  agents: Utilisateur[] = [];
   constructor(
     public dialog: MatDialog,
     private fb: FormBuilder,
-    private structureService: StructureService
+    private structureService: StructureService,
+    private agentService: AgentService,
   ) {
     this.structureForm = this.fb.group({
       idStructure: [''],
@@ -38,6 +41,7 @@ export class ListStructureComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadStructures();
+    this.loadAgents();
     this.structures.paginator = this.paginator;
   }
 
@@ -48,18 +52,20 @@ export class ListStructureComponent implements OnInit {
     });
   }
 
+  loadAgents(): void {
+    this.agentService.getAllUtilisateurs().subscribe((data: Utilisateur[]) => {
+      this.agents = data;
+
+    });
+  }
+
   getStructureParentName(id: number): string {
     const structure = this.structures.data.find((s) => s.idStructure === id);
     return structure ? structure.nomStructure : '';
   }
 
   getAgentName(id: number): string {
-    // Simulated agent name retrieval
-    const agents = [
-      { id: 1, nom: 'Jean Dupont' },
-      { id: 2, nom: 'Marie Durand' },
-    ];
-    const agent = agents.find((a) => a.id === id);
+    const agent = this.agents.find((a) => a.id === id);
     return agent ? agent.nom : '';
   }
 

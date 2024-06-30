@@ -86,7 +86,7 @@
             <mat-label>Responsable</mat-label>
             <mat-select formControlName="responsableStructure">
               <mat-option *ngFor="let agent of agents" [value]="agent.id">
-                {{ agent.nom }}
+                {{ agent.nom | uppercase }} {{ agent.prenom | titlecase }}
               </mat-option>
             </mat-select>
           </mat-form-field>

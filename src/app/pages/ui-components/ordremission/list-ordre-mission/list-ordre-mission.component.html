@@ -1,0 +1,221 @@
+<mat-card class="cardWithShadow theme-card">
+  <mat-card-header>
+    <div class="d-flex justify-content-between w-100">
+      <mat-card-title class="m-b-0 text-right">Ordre de Mission</mat-card-title>
+      <button mat-raised-button color="primary" (click)="ouvrirDialogAjout()">Nouveau</button>
+    </div>
+  </mat-card-header>
+  <mat-card-content class="b-t-1">
+    <div class="row">
+      <div class="col-lg-8">
+        <mat-form-field appearance="outline" class="w-100 input-search" color="primary">
+          <input matInput placeholder="Recherche" />
+          <mat-icon matSuffix role="img">
+            <i-tabler name="search" class="icon-20"></i-tabler>
+          </mat-icon>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="table-responsive">
+          <table mat-table [dataSource]="ordresMission" class="w-100">
+            <ng-container matColumnDef="reference">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Référence</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.refOm }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateOm | date: 'dd/MM/yyyy' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="matricule">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Matricule</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.vehicule?.matriculeVehicule }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="motif">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Motif</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.objetOm }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="destination">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Destination</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.destination?.libelleDestination }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="dateDepart">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date Départ</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateDepart | date: 'dd/MM/yyyy' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="heureDepart">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Heure Départ</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.heureDepart }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="dateRetour">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Date Retour</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.dateRetour | date: 'dd/MM/yyyy' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="heureRetour">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Heure Retour</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.heureRetour }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="statut">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Statut</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.statutOm }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="validePar">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Validé Par</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">{{ element.validateur?.id }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">Actions</th>
+              <td mat-cell *matCellDef="let element" class="mat-body-1">
+                <button mat-icon-button color="accent" (click)="ouvrirDialogModification(element)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="ouvrirDialogSuppression(element)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+          <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Sélectionner la page des ordres de mission"></mat-paginator>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<!-- Dialog pour Ajouter/Modifier un Ordre de Mission -->
+<ng-template #dialogAjoutModification let-dialogRef>
+  <form [formGroup]="ordreMissionForm" (ngSubmit)="sauvegarderOrdreMission()">
+    <div class="mdc-dialog__container">
+      <div class="mat-mdc-dialog-surface mdc-dialog__surface">
+        <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">{{ isEdit ? 'Modifier Ordre de Mission' : 'Ajouter Ordre de Mission' }}</h2>
+        <mat-dialog-content class="mat-mdc-dialog-content" style="padding: 20px;">
+          <div class="row">
+            <div class="col">
+              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                <mat-label>Référence</mat-label>
+                <input matInput formControlName="refOm" />
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                <mat-label>Matricule Véhicule</mat-label>
+                <mat-select [formControl]="ordreMissionForm.get('vehicule')?.get('idVehicule')" (selectionChange)="onVehiculeSelected($event)">
+                  <mat-option *ngFor="let vehicule of vehicules" [value]="vehicule.idVehicule">
+                    {{ vehicule.matriculeVehicule }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                <mat-label>Marque</mat-label>
+                <input matInput />
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                <mat-label>Modèle</mat-label>
+                <input matInput  />
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                <mat-label>Kilométrage</mat-label>
+                <input matInput formControlName="kmDepartOm" />
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                <mat-label>Motif</mat-label>
+                <input matInput formControlName="objetOm" />
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                <mat-label>Destination</mat-label>
+                <mat-select [formControl]="ordreMissionForm.get('destination')?.get('idDestination')">
+                  <mat-option *ngFor="let dest of destinations" [value]="dest.idDestination">
+                    {{ dest.libelleDestination }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                <mat-label>Date Départ</mat-label>
+                <input matInput formControlName="dateDepart" [matDatepicker]="pickerDateDepart" />
+                <mat-datepicker-toggle matSuffix [for]="pickerDateDepart"></mat-datepicker-toggle>
+                <mat-datepicker #pickerDateDepart></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                <mat-label>Heure Départ</mat-label>
+                <mat-select formControlName="heureDepart">
+                  <mat-option *ngFor="let hour of heures" [value]="hour">{{ hour }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                <mat-label>Date Retour</mat-label>
+                <input matInput formControlName="dateRetour" [matDatepicker]="pickerDateRetour" />
+                <mat-datepicker-toggle matSuffix [for]="pickerDateRetour"></mat-datepicker-toggle>
+                <mat-datepicker #pickerDateRetour></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field appearance="outline" class="w-100 m-b-16" color="primary">
+                <mat-label>Heure Retour</mat-label>
+                <mat-select formControlName="heureRetour">
+                  <mat-option *ngFor="let hour of heures" [value]="hour">{{ hour }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-dialog-content>
+        <mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
+          <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
+          <button mat-flat-button color="primary" type="submit">{{ isEdit ? 'Modifier' : 'Ajouter' }}</button>
+        </mat-dialog-actions>
+      </div>
+    </div>
+  </form>
+</ng-template>
+
+<!-- Dialog de Confirmation de Suppression -->
+<ng-template #dialogSuppression let-dialogRef>
+  <div class="mdc-dialog__container">
+    <div class="mat-mdc-dialog-surface mdc-dialog__surface">
+      <h2 mat-dialog-title class="mat-mdc-dialog-title mdc-dialog__title">Supprimer</h2>
+      <div class="p-x-24 p-b-24 ng-star-inserted">Êtes-vous sûr de vouloir supprimer <span class="f-w-600">{{ selectedOrdreMission?.refOm }}</span>?</div>
+      <div mat-dialog-actions class="mat-mdc-dialog-actions mdc-dialog__actions p-24 p-t-0">
+        <button mat-flat-button color="warn" (click)="fermerDialog()">Annuler</button>
+        <button mat-flat-button color="primary" (click)="confirmerSuppression()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

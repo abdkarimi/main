@@ -70,12 +70,12 @@ export class ListAccidentComponent implements OnInit {
   ];
 
   agents: Agent[] = [
-    { matricule: 1, nom: 'Dupont', prenom: 'Jean' },
+    { matricule: 1, nom: 'El Harchaoui', prenom: 'Bouazza' },
     { matricule: 2, nom: 'Martin', prenom: 'Marie' },
   ];
 
   vehicules: Vehicule[] = [
-    { id: 1, designation: 'Peugeot 208' },
+    { id: 1, designation: 'M 157531' },
     { id: 2, designation: 'Renault Clio' },
   ];
 
